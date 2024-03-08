@@ -1,4 +1,5 @@
 import express, {Express, Request, Response} from "express";
+import Application from "./app";
 import dotenv from 'dotenv';
 
 dotenv.config();
@@ -6,9 +7,7 @@ dotenv.config();
 const app: Express = express();
 const PORT = process.env.PORT
 
-app.get("/", (req: Request, res: Response) => {
-    res.send("hello");
-});
+Application.main();
 
 app.listen(PORT, () => {
     console.log(`listening on port http://localhost:${PORT}`)
