@@ -1,11 +1,11 @@
 import { Entity, PrimaryGeneratedColumn, Column, Timestamp, BaseEntity } from 'typeorm';
-import { Roles } from '../constants/roles.enum';
+import { UserRole } from '../constants/roles.enum';
 
 @Entity()
 export class User extends BaseEntity {
 
     @PrimaryGeneratedColumn("uuid")
-    id: number
+    id: string
 
     @Column()
     email: string
@@ -16,6 +16,9 @@ export class User extends BaseEntity {
     @Column({type: 'timestamp'})
     createdAt: Date
 
-    @Column()
-    role: Roles
+    @Column({
+        type: 'enum',
+        enum: UserRole
+    })
+    role: UserRole
 }
