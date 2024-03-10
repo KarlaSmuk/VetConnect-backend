@@ -11,6 +11,7 @@ node_modules
 dist
 dist-ssr
 *.local
+psql
 
 # dotenv environment variable files
 .env

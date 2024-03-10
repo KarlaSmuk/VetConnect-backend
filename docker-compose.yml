@@ -2,7 +2,7 @@ version: '3.9'
 
 services:
   database:
-    image: postgres
+    image: postgres:latest
     container_name: vetconnect-db
     restart: always
     environment:
@@ -12,7 +12,4 @@ services:
     ports:
       - "5433:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
-
-volumes:
-  pgdata:
+      - ./psql/data:/var/lib/postgresql/data

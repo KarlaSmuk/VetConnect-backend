@@ -1,5 +1,5 @@
 export enum UserRole {
-    administrator,
-    veterinar,
-    vlasnik
+    ADMIN = "administrator",
+    VET = "veterinar",
+    OWNER = "vlasnik"
 }
