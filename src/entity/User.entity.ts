@@ -1,8 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, Timestamp, BaseEntity } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { UserRole } from '../constants/roles.enum';
+import { OtpData } from './OtpData.entity';
 
 @Entity()
-export class User extends BaseEntity {
+export class User {
 
     @PrimaryGeneratedColumn("uuid")
     id: string
@@ -10,7 +11,9 @@ export class User extends BaseEntity {
     @Column()
     email: string
 
-    @Column()
+    @Column({
+        nullable: true
+    })
     password: string
 
     @Column({type: 'timestamp'})
@@ -21,4 +24,9 @@ export class User extends BaseEntity {
         enum: UserRole
     })
     role: UserRole
+
+    //relationships
+
+    @OneToMany(() => OtpData, (otp) => otp.user)
+    otp: OtpData[];
 }
