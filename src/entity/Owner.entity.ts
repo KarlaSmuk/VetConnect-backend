@@ -1,5 +1,6 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
 import { User } from './User.entity';
+import { Pet } from './Pet.entity';
 
 @Entity()
 export class Owner {
@@ -28,6 +29,9 @@ export class Owner {
     @OneToOne(() => User)
     @JoinColumn()
     user: User
+
+    @OneToMany(() => Pet, (pet) => pet.owner)
+    pets: Pet[];
 
    
 }
