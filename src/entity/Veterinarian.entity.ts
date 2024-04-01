@@ -1,6 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn, ManyToOne } from 'typeorm';
 import { User } from './User.entity';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
+import { Visit } from './Visit.entity';
 
 @Entity()
 export class Veterinarian {
@@ -33,5 +34,7 @@ export class Veterinarian {
     @ManyToOne(() => VeterinaryClinic, (clinic) => clinic.veterinarians)
     clinic: VeterinaryClinic;
 
+    @OneToMany(() => Visit, (visit) => visit.veterinarian)
+    visits: Visit[];
    
 }

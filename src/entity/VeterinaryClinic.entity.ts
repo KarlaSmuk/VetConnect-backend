@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn } from 'typeorm';
-import { User } from './User.entity';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
 import { Veterinarian } from './Veterinarian.entity';
 import { WorkingHours } from './WorkingHours.entity';
+import { Supply } from './Supply.entity';
+import { Appointment } from './Appointment.entity';
+import { Treatment } from './Treatment.entity';
 
 @Entity()
 export class VeterinaryClinic {
@@ -37,5 +39,14 @@ export class VeterinaryClinic {
 
     @OneToMany(() => WorkingHours, (work) => work.clinic)
     workingHours: WorkingHours[];
+
+    @OneToMany(() => Supply, (supply) => supply.clinic)
+    supply: Supply[];
+
+    @OneToMany(() => Treatment, (treatment) => treatment.clinic)
+    treatment: Treatment[];
+
+    @OneToMany(() => Appointment, (appointment) => appointment.clinic)
+    appointment: Appointment[];
    
 }

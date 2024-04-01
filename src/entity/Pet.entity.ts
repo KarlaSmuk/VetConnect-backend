@@ -1,7 +1,9 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Owner } from './Owner.entity';
 import { Species } from './Species.entity';
 import { Breed } from './Breed.entity';
+import { Appointment } from './Appointment.entity';
+import { Visit } from './Visit.entity';
 
 @Entity()
 export class Pet {
@@ -32,4 +34,10 @@ export class Pet {
 
     @ManyToOne(() => Breed, (breed) => breed.pets)
     breed: Breed;
+
+    @OneToMany(() => Appointment, (appointment) => appointment.clinic)
+    appointment: Appointment[];
+
+    @OneToMany(() => Visit, (visit) => visit.pet)
+    visits: Visit[];
 }
