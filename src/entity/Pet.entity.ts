@@ -17,6 +17,15 @@ export class Pet {
     @Column()
     dateOfBirth: Date
 
+    @Column({default: false})
+    neutered: boolean
+
+    @Column()
+    gender: string
+
+    @Column()
+    color: string
+
     //leave like that for now
     @Column({
         type: 'bytea',
