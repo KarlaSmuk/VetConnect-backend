@@ -1,5 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
+import { InvoiceItem } from './InvoiceItem.entity';
 
 @Entity()
 export class Treatment {
@@ -20,6 +21,9 @@ export class Treatment {
 
     @ManyToOne(() => VeterinaryClinic, (clinic) => clinic.treatment)
     clinic: VeterinaryClinic;
+
+    @OneToMany(() => InvoiceItem, (item) => item.treatment)
+    item: InvoiceItem[];
 
    
 }
