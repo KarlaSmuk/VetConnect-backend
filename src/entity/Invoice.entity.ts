@@ -8,7 +8,7 @@ export class Invoice {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column('timestamp')
+    @Column({type: 'timestamp', default: () => 'now()'})
     issueDate: Date
 
     @Column('double precision')

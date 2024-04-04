@@ -8,7 +8,7 @@ export class Visit {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({ type: 'timestamp' })
+    @Column({ type: 'timestamp', default: () => 'now()' })
     time: Date
 
     @Column({ type: 'double precision' })
