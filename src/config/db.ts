@@ -3,6 +3,10 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
+const rootDir = process.env.NODE_ENV == "development" ?
+  "src" :
+  "dist"
+
 export const AppDataSource = new DataSource({
     type: 'postgres',
     host: process.env.POSTGRES_HOST,
@@ -11,8 +15,8 @@ export const AppDataSource = new DataSource({
     password: process.env.POSTGRES_PASSWORD,
     database: process.env.POSTGRES_DB,
     synchronize: false,
-    entities: ['dist/**/*.entity.js'],
-    migrations: ['dist/migrations/*.js'],
-    migrationsTableName: "migrations",
-    migrationsRun: true
+    migrationsRun: true,
+    entities: [rootDir + "/**/*.entity{.ts,.js}"],
+    migrations: [rootDir + "/migrations/*.{js,ts}"],
+    migrationsTableName: "migrations"
 })
