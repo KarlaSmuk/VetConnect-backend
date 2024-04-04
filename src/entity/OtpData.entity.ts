@@ -10,19 +10,16 @@ export class OtpData {
     @Column()
     otp: number
 
-    @Column()
-    @CreateDateColumn({type: 'timestamp'})
+    @Column('timestamptz')
     expiration: Date
 
-    @Column()
-    @CreateDateColumn({type: 'timestamptz', default: Date.now})
+    @Column({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP'})
     createdAt: Date
 
     @Column({default: 0})
     attemptsCount: number
 
-    @Column()
-    @CreateDateColumn({type: 'timestamp', nullable: true, default: null})
+    @Column({ type: 'timestamptz', nullable: true, default: null})
     lastAttemptTime: Date
 
     @Column({default: false})

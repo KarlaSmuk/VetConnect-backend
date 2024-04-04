@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn, ManyToOne, Double } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, OneToOne, JoinColumn, ManyToOne, Double, CreateDateColumn } from 'typeorm';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
 
 @Entity()
@@ -18,6 +18,9 @@ export class Supply {
 
     @Column()
     minimumRequired: number
+
+    @Column({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP'})
+    updated: Date
 
     //relationships
 

@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToOne, JoinColumn, OneToMany, CreateDateColumn } from 'typeorm';
 import { Visit } from './Visit.entity';
 import { InvoiceItem } from './InvoiceItem.entity';
 
@@ -8,7 +8,7 @@ export class Invoice {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({type: 'timestamp', default: () => 'now()'})
+    @Column({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP'})
     issueDate: Date
 
     @Column('double precision')

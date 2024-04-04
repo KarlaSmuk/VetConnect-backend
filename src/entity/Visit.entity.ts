@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Double } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, Double, CreateDateColumn } from 'typeorm';
 import { Pet } from './Pet.entity';
 import { Veterinarian } from './Veterinarian.entity';
 
@@ -8,7 +8,7 @@ export class Visit {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({ type: 'timestamp', default: () => 'now()' })
+    @Column({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP'})
     time: Date
 
     @Column({ type: 'double precision' })
