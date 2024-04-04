@@ -1,4 +1,4 @@
-import { RequestHandler } from 'express';
+import { application, RequestHandler } from 'express';
 import { AppDataSource } from "../config/db";
 import { OtpData } from '../entity/OtpData.entity';
 import otpGenerator from 'otp-generator';
@@ -48,8 +48,7 @@ export const getOtp:RequestHandler = async (req, res, next) => {
 
     const {userId} = req.params;
 
-    const now = Date();
-    now.toString();
+    const now = new Date();
 
     try {
 
@@ -71,8 +70,7 @@ export const getOtp:RequestHandler = async (req, res, next) => {
 
         res.status(200).json({
             success: true,
-            message: otpUser,
-            date: now
+            message: otpUser
             });
         
     } catch (error: any) {
@@ -85,15 +83,26 @@ export const getOtp:RequestHandler = async (req, res, next) => {
 
 export const getAllOtps:RequestHandler = async (req, res, next) => {
 
-    // const {id} = req.params;
+    try {
 
-    // const user = await AppDataSource
-    //     .createEntityManager()
-    //     .findOneByOrFail(User, {
-    //         id: id
-    //     })
+        const otpUser = await AppDataSource
+            .manager
+            .find(OtpData)
 
-    // res.status(201).json(user);
+
+        //when is created send email to user
+
+        res.status(200).json({
+            success: true,
+            message: otpUser
+            });
+        
+    } catch (error: any) {
+        res.status(400).send({
+            success: false,
+            message: error.message
+            });
+    }
 };
 
 export const setPassword:RequestHandler = async (req, res, next) => {
