@@ -1,4 +1,4 @@
-import { application, RequestHandler } from 'express';
+import { RequestHandler } from 'express';
 import { AppDataSource } from "../config/db";
 import { OtpData } from '../entity/OtpData.entity';
 import otpGenerator from 'otp-generator';
@@ -16,7 +16,7 @@ export const createOtp:RequestHandler = async (req, res, next) => {
                 id: userId
             })
 
-        let otp = otpGenerator.generate(4, {
+        const otp = otpGenerator.generate(4, {
             upperCaseAlphabets: false,
             lowerCaseAlphabets: false,
             specialChars: false
