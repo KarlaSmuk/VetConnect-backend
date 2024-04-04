@@ -4,6 +4,7 @@ import Application from "./app";
 import dotenv from 'dotenv';
 import { setUpMiddleware } from './config/middleware';
 import userRoute from './routes/user.router';
+import otpRoute from './routes/otp.router';
 
 dotenv.config();
 
@@ -15,6 +16,7 @@ setUpMiddleware(app);
 Application.main();
 
 app.use('/api/user', userRoute)
+app.use('/api/otp', otpRoute)
 
 app.listen(PORT, () => {
     console.log(`listening on port http://localhost:${PORT}`)

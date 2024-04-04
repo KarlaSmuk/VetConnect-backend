@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToMany, CreateDateColumn } from 'typeorm';
 import { UserRole } from '../constants/roles.enum';
 import { OtpData } from './OtpData.entity';
 
@@ -8,15 +8,16 @@ export class User {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column()
+    @Column({ unique: true })
     email: string
 
     @Column({
         nullable: true
     })
-    password: string
+    password?: string
 
-    @Column({type: 'timestamp', default: () => 'now()'})
+    @Column()
+    @CreateDateColumn({type: 'timestamptz', default: Date.now})
     createdAt: Date
 
     @Column({
@@ -29,4 +30,10 @@ export class User {
 
     @OneToMany(() => OtpData, (otp) => otp.user)
     otp: OtpData[];
+
+    constructor(email: string, role: UserRole, password?: string) {
+        this.email = email;
+        this.role = role;
+        this.password = password;
+    }
 }

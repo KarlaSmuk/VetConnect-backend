@@ -18,5 +18,6 @@ export const AppDataSource = new DataSource({
     migrationsRun: true,
     entities: [rootDir + "/**/*.entity{.ts,.js}"],
     migrations: [rootDir + "/migrations/*.{js,ts}"],
-    migrationsTableName: "migrations"
+    migrationsTableName: "migrations",
+    //ssl: true //for production
 })

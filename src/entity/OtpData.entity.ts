@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn } from 'typeorm';
 import { User } from './User.entity';
 
 @Entity()
@@ -10,16 +10,19 @@ export class OtpData {
     @Column()
     otp: number
 
-    @Column({type: 'timestamp'})
+    @Column()
+    @CreateDateColumn({type: 'timestamp'})
     expiration: Date
 
-    @Column({type: 'timestamp', default: () => 'now()'})
+    @Column()
+    @CreateDateColumn({type: 'timestamptz', default: Date.now})
     createdAt: Date
 
     @Column({default: 0})
     attemptsCount: number
 
-    @Column({type: 'timestamp', nullable: true})
+    @Column()
+    @CreateDateColumn({type: 'timestamp', nullable: true, default: null})
     lastAttemptTime: Date
 
     @Column({default: false})
@@ -28,6 +31,13 @@ export class OtpData {
     //relationships
 
     @ManyToOne(() => User, (user) => user.otp)
-    user: string;
+    user: User;
+
+    constructor(otp: number, user: User) {
+        this.otp = otp
+        this.createdAt = new Date()
+        this.expiration = new Date(Date.now() + 3600000)
+        this.user = user
+    }
 
 }
