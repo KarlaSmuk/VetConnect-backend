@@ -1,5 +1,5 @@
 import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
-import { AppointmentStatus } from '../constants/appointmentStatus.enum';
+import { AppointmentStatus } from '../../constants/appointmentStatus.enum';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
 import { Pet } from './Pet.entity';
 

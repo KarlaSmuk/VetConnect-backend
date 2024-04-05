@@ -29,8 +29,8 @@ export class VeterinaryClinic {
     @Column()
     email: string
 
-    @Column()
-    webAddress: string
+    @Column({nullable: true})
+    webAddress?: string
 
     //relationships
 
@@ -49,4 +49,13 @@ export class VeterinaryClinic {
     @OneToMany(() => Appointment, (appointment) => appointment.clinic)
     appointment: Appointment[];
    
+    constructor(oib: string, name: string, address: string, county: string, phoneNumber: string, email: string, webAddress?: string) {
+        this.oib = oib;
+        this.name = name;
+        this.address = address;
+        this.county = county;
+        this.phoneNumber = phoneNumber;
+        this.email = email;
+        this.webAddress = webAddress;
+    }
 }

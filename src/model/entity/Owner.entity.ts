@@ -22,7 +22,7 @@ export class Owner {
         type: 'bytea',
         nullable: true
     })
-    photo: Buffer
+    photo?: Buffer
 
     //relationships
 
@@ -32,6 +32,15 @@ export class Owner {
 
     @OneToMany(() => Pet, (pet) => pet.owner)
     pets: Pet[];
+
+
+    constructor(firstName: string, lastName: string, phoneNumber: string, user: User, photo?: Buffer) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.user = user;
+        this.photo = photo;
+    }
 
    
 }

@@ -1,8 +1,8 @@
 import { RequestHandler } from 'express';
 import { AppDataSource } from "../config/db";
-import { OtpData } from '../entity/OtpData.entity';
+import { OtpData } from '../model/entity/OtpData.entity';
 import otpGenerator from 'otp-generator';
-import { User } from '../entity/User.entity';
+import { User } from '../model/entity/User.entity';
 
 export const createOtp:RequestHandler = async (req, res, next) => {
 
@@ -48,8 +48,6 @@ export const getOtp:RequestHandler = async (req, res, next) => {
 
     const {userId} = req.params;
 
-    const now = new Date();
-
     try {
 
         const user = await AppDataSource
@@ -62,7 +60,8 @@ export const getOtp:RequestHandler = async (req, res, next) => {
             .getRepository(OtpData)
             .createQueryBuilder("otp")
             .where("otp.user = :userId", { userId: user.id })
-            .andWhere("otp.expiration > :now", { now })
+            .andWhere("otp.expiration > :now", { now: new Date() })
+            .andWhere("otp.isUsed = :isUsed", { isUsed: false })
             .getOneOrFail()
 
 
@@ -88,9 +87,6 @@ export const getAllOtps:RequestHandler = async (req, res, next) => {
         const otpUser = await AppDataSource
             .manager
             .find(OtpData)
-
-
-        //when is created send email to user
 
         res.status(200).json({
             success: true,

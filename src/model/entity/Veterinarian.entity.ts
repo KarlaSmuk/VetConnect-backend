@@ -23,7 +23,7 @@ export class Veterinarian {
         type: 'bytea',
         nullable: true
     })
-    photo: Buffer
+    photo?: Buffer
 
     //relationships
 
@@ -36,5 +36,14 @@ export class Veterinarian {
 
     @OneToMany(() => Visit, (visit) => visit.veterinarian)
     visits: Visit[];
+
+    constructor(firstName: string, lastName: string, phoneNumber: string, user: User, clinic: VeterinaryClinic, photo?: Buffer) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
+        this.user = user;
+        this.photo = photo;
+        this.clinic = clinic;
+    }
    
 }
