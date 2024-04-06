@@ -2,7 +2,7 @@ import { validate } from 'class-validator';
 import { plainToInstance } from 'class-transformer';
 import { RequestHandler } from 'express';
 
-export function validateRequest(type: any): RequestHandler {
+export function validateRequest<T extends object>(type: new () => T): RequestHandler {
     return async (req, res, next) => {
         const dto = plainToInstance(type, req.body);
         const errors = await validate(dto);

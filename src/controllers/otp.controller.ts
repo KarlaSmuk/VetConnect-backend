@@ -4,7 +4,7 @@ import { OtpData } from '../model/entity/OtpData.entity';
 import otpGenerator from 'otp-generator';
 import { User } from '../model/entity/User.entity';
 
-export const createOtp:RequestHandler = async (req, res, next) => {
+export const createOtp:RequestHandler = async (req, res) => {
 
     const {userId} = req.params;
 
@@ -34,17 +34,19 @@ export const createOtp:RequestHandler = async (req, res, next) => {
             message: otpUser
             });
         
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-            });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 
     
 };
 
-export const getOtp:RequestHandler = async (req, res, next) => {
+export const getOtp:RequestHandler = async (req, res) => {
 
     const {userId} = req.params;
 
@@ -72,15 +74,17 @@ export const getOtp:RequestHandler = async (req, res, next) => {
             message: otpUser
             });
         
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-            });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const getAllOtps:RequestHandler = async (req, res, next) => {
+export const getAllOtps:RequestHandler = async (req, res) => {
 
     try {
 
@@ -93,11 +97,13 @@ export const getAllOtps:RequestHandler = async (req, res, next) => {
             message: otpUser
             });
         
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-            });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 

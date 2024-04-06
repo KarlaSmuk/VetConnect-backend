@@ -7,7 +7,7 @@ import { Species } from '../model/entity/Species.entity';
 import { Breed } from '../model/entity/Breed.entity';
 import { Owner } from '../model/entity/Owner.entity';
 
-export const createPet:RequestHandler = async (req, res, next) => {
+export const createPet:RequestHandler = async (req, res) => {
 
     const {ownerId} = req.params;
     const dto: CreatePetDto = req.body;
@@ -52,15 +52,17 @@ export const createPet:RequestHandler = async (req, res, next) => {
             success: true,
             message: createdPet
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const getAllPets:RequestHandler = async (req, res, next) => {
+export const getAllPets:RequestHandler = async (req, res) => {
 
     const {ownerId} = req.query;
 
@@ -86,15 +88,17 @@ export const getAllPets:RequestHandler = async (req, res, next) => {
             success: true,
             message: pets
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const getPet:RequestHandler = async (req, res, next) => {
+export const getPet:RequestHandler = async (req, res) => {
 
     const {petId} = req.params;
 
@@ -111,17 +115,19 @@ export const getPet:RequestHandler = async (req, res, next) => {
             message: pet
         });
         
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 
     
 };
 
-export const getUser:RequestHandler = async (req, res, next) => {
+export const getUser:RequestHandler = async (req, res) => {
 
     const {id} = req.params;
 
@@ -138,11 +144,13 @@ export const getUser:RequestHandler = async (req, res, next) => {
             message: user
         });
 
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 
     

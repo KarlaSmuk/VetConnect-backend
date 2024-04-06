@@ -11,7 +11,7 @@ import { Supply } from '../model/entity/Supply.entity';
 import { CreateTreatmentDto } from '../model/requests/createTreatment.dto';
 import { Treatment } from '../model/entity/Treatment.entity';
 
-export const createVetClinic:RequestHandler = async (req, res, next) => {
+export const createVetClinic:RequestHandler = async (req, res) => {
 
     const dto: CreateClinicDto = req.body;
 
@@ -25,15 +25,17 @@ export const createVetClinic:RequestHandler = async (req, res, next) => {
             success: true,
             message: createdClinic
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const getAllVetClinics:RequestHandler = async (req, res, next) => {
+export const getAllVetClinics:RequestHandler = async (req, res) => {
 
     try {
 
@@ -46,17 +48,19 @@ export const getAllVetClinics:RequestHandler = async (req, res, next) => {
             message: clinics
         });
         
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 
     
 };
 
-export const getVetClinic:RequestHandler = async (req, res, next) => {
+export const getVetClinic:RequestHandler = async (req, res) => {
 
     const {id} = req.params;
 
@@ -73,11 +77,13 @@ export const getVetClinic:RequestHandler = async (req, res, next) => {
             message: clinic
         });
 
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 
     
@@ -85,7 +91,7 @@ export const getVetClinic:RequestHandler = async (req, res, next) => {
 
 //working hours
 
-export const addWorkingHours:RequestHandler = async (req, res, next) => {
+export const addWorkingHours:RequestHandler = async (req, res) => {
 
     const { clinicId } = req.params; 
     const dto: CreateUpdateWorkingHourDTO = req.body;
@@ -101,7 +107,7 @@ export const addWorkingHours:RequestHandler = async (req, res, next) => {
 
         for(const wh of dto.workingHours){
 
-            let existingWorkingHour = await workingHoursRepository.findOne({
+            const existingWorkingHour = await workingHoursRepository.findOne({
                 where: {
                     clinic: { id: clinicId },
                     dayOfWeek: wh.day
@@ -126,13 +132,18 @@ export const addWorkingHours:RequestHandler = async (req, res, next) => {
       
 
         res.status(200).json({ status: true, message: "Working hours added successfully." });
-    } catch (error: any) {
-        res.status(500).json({ status: false, message: error.message });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
 
-export const updateWorkingHours:RequestHandler = async (req, res, next) => {
+export const updateWorkingHours:RequestHandler = async (req, res) => {
 
     const { clinicId } = req.params; 
     const dto: CreateUpdateWorkingHourDTO = req.body;
@@ -148,7 +159,7 @@ export const updateWorkingHours:RequestHandler = async (req, res, next) => {
 
         for(const wh of dto.workingHours){
 
-            let existingWorkingHour = await workingHoursRepository.findOne({
+            const existingWorkingHour = await workingHoursRepository.findOne({
                 where: {
                     clinic: { id: clinicId },
                     dayOfWeek: wh.day
@@ -169,12 +180,17 @@ export const updateWorkingHours:RequestHandler = async (req, res, next) => {
       
 
         res.status(200).json({ status: true, message: "Working hours updated successfully." });
-    } catch (error: any) {
-        res.status(500).json({ status: false, message: error.message });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const deleteWorkingHours:RequestHandler = async (req, res, next) => {
+export const deleteWorkingHours:RequestHandler = async (req, res) => {
 
     const { clinicId, day } = req.query;
 
@@ -201,14 +217,19 @@ export const deleteWorkingHours:RequestHandler = async (req, res, next) => {
       
 
         res.status(200).json({ status: true, message: `Working hours for day: ${day} for ${clinic.id} deleted succesfully.` });
-    } catch (error: any) {
-        res.status(500).json({ status: false, message: error.message });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
 //supplies
 
-export const addSupplies:RequestHandler = async (req, res, next) => {
+export const addSupplies:RequestHandler = async (req, res) => {
 
     const {clinicId} = req.params;
     const dto: CreateSupplyDto = req.body;
@@ -231,15 +252,17 @@ export const addSupplies:RequestHandler = async (req, res, next) => {
             success: true,
             message: `Supply for clinic ${clinic.id} added succesfully.`
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const getAllSuppliesForClinic:RequestHandler = async (req, res, next) => {
+export const getAllSuppliesForClinic:RequestHandler = async (req, res) => {
 
     const {clinicId} = req.params;
 
@@ -253,7 +276,7 @@ export const getAllSuppliesForClinic:RequestHandler = async (req, res, next) => 
             throw new NotFoundError("Clinic not found.")
         }
 
-        let supplies = await supplyRepository.find({
+        const supplies = await supplyRepository.find({
             where: {
                 clinic: clinic
             }
@@ -264,15 +287,17 @@ export const getAllSuppliesForClinic:RequestHandler = async (req, res, next) => 
             success: true,
             message: supplies
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const updateSupply:RequestHandler = async (req, res, next) => {
+export const updateSupply:RequestHandler = async (req, res) => {
 
     const {supplyId} = req.params;
     const stockQuantity = Number(req.query.stockQuantity);
@@ -280,7 +305,7 @@ export const updateSupply:RequestHandler = async (req, res, next) => {
     try {
 
         const supplyRepository = AppDataSource.getRepository(Supply);
-        let supplyToUpdate = await supplyRepository.findOne({
+        const supplyToUpdate = await supplyRepository.findOne({
             where: {
                 id: supplyId
             }
@@ -299,17 +324,20 @@ export const updateSupply:RequestHandler = async (req, res, next) => {
             success: true,
             message: `Supply ${supplyId} updated succesfully.`
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
+        
     }
 };
 
 //treatments
 
-export const addTreatments:RequestHandler = async (req, res, next) => {
+export const addTreatments:RequestHandler = async (req, res) => {
 
     const {clinicId} = req.params;
     const dto: CreateTreatmentDto = req.body;
@@ -332,15 +360,17 @@ export const addTreatments:RequestHandler = async (req, res, next) => {
             success: true,
             message: `Treatment for clinic ${clinic.id} added succesfully.`
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
-export const getAllTreatmentsForClinic:RequestHandler = async (req, res, next) => {
+export const getAllTreatmentsForClinic:RequestHandler = async (req, res) => {
 
     const {clinicId} = req.params;
 
@@ -354,7 +384,7 @@ export const getAllTreatmentsForClinic:RequestHandler = async (req, res, next) =
             throw new NotFoundError("Clinic not found.")
         }
 
-        let treatments = await treatmentRepository.find({
+        const treatments = await treatmentRepository.find({
             where: {
                 clinic: clinic
             }
@@ -365,17 +395,19 @@ export const getAllTreatmentsForClinic:RequestHandler = async (req, res, next) =
             success: true,
             message: treatments
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
 
 
-export const deleteTreatment:RequestHandler = async (req, res, next) => {
+export const deleteTreatment:RequestHandler = async (req, res) => {
 
     const {treatmentId} = req.params;
 
@@ -384,7 +416,7 @@ export const deleteTreatment:RequestHandler = async (req, res, next) => {
         const treatmentRepository = AppDataSource.getRepository(Treatment);
 
 
-        let treatmentToDelete = treatmentRepository
+        const treatmentToDelete = treatmentRepository
             .findOneByOrFail({id: treatmentId})
 
 
@@ -395,16 +427,18 @@ export const deleteTreatment:RequestHandler = async (req, res, next) => {
             success: true,
             message: `Treatment ${treatmentId} deleted succesfully.`
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
 
 
-export const updateTreatment:RequestHandler = async (req, res, next) => {
+export const updateTreatment:RequestHandler = async (req, res) => {
 
     const {treatmentId} = req.params;
     const price = Number(req.query.price);
@@ -412,7 +446,7 @@ export const updateTreatment:RequestHandler = async (req, res, next) => {
     try {
 
         const treatmentRepository = AppDataSource.getRepository(Treatment);
-        let treatmentToUpdate = await treatmentRepository.findOne({
+        const treatmentToUpdate = await treatmentRepository.findOne({
             where: {
                 id: treatmentId
             }
@@ -430,10 +464,12 @@ export const updateTreatment:RequestHandler = async (req, res, next) => {
             success: true,
             message: `Treatment ${treatmentId} updated succesfully.`
           });
-    } catch (error: any) {
-        res.status(400).send({
-            success: false,
-            message: error.message
-          });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+              });
+        }
     }
 };
