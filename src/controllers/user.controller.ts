@@ -6,6 +6,7 @@ import { UserRole } from '../constants/roles.enum';
 import { Owner } from '../model/entity/Owner.entity';
 import { Veterinarian } from '../model/entity/Veterinarian.entity';
 import { VeterinaryClinic } from '../model/entity/VeterinaryClinic.entity';
+import { BadRequestError } from '../middleware/errorHandling';
 
 export const createOwnerUser:RequestHandler = async (req, res) => {
 
@@ -14,7 +15,7 @@ export const createOwnerUser:RequestHandler = async (req, res) => {
     try {
 
         if (dto.role !== UserRole.OWNER) {
-            throw new Error("Invalid role provided. Must be 'Vlasnik'.");
+            throw new BadRequestError("Invalid role provided. Must be 'Vlasnik'.")
         }
 
         const createdUser = await AppDataSource
@@ -50,7 +51,7 @@ export const createVetUser:RequestHandler = async (req, res) => {
     try {
 
         if (dto.role !== UserRole.VET) {
-            throw new Error("Invalid role provided. Must be 'Veterinar'.");
+            throw new BadRequestError("Invalid role provided. Must be 'Veterinar'.")
         }
 
         const clinic = await AppDataSource

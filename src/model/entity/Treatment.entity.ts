@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
 import { InvoiceItem } from './InvoiceItem.entity';
+import { Visit } from './Visit.entity';
 
 @Entity()
 export class Treatment {
@@ -25,6 +26,9 @@ export class Treatment {
     @OneToMany(() => InvoiceItem, (item) => item.treatment)
     item: InvoiceItem[];
 
+    @ManyToMany(() => Visit, visit => visit.treatments) 
+    visits: Visit[];
+    
     constructor(name: string, description: string, price: number, clinic: VeterinaryClinic) {
         this.name = name;
         this.description = description;

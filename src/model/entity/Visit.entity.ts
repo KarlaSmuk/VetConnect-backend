@@ -1,6 +1,8 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinTable, ManyToMany } from 'typeorm';
 import { Pet } from './Pet.entity';
 import { Veterinarian } from './Veterinarian.entity';
+import { Treatment } from './Treatment.entity';
+import { disconnect } from 'process';
 
 @Entity()
 export class Visit {
@@ -8,7 +10,7 @@ export class Visit {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP'})
+    @Column({type: 'timestamptz'})
     time: Date
 
     @Column({ type: 'double precision' })
@@ -21,9 +23,6 @@ export class Visit {
     diagnosis: string
 
     @Column()
-    treatment: string
-
-    @Column()
     notes: string
 
     //relationships
@@ -33,4 +32,17 @@ export class Visit {
 
     @ManyToOne(() => Veterinarian, (vet) => vet.visits)
     veterinarian: Veterinarian;
+
+    @ManyToMany(() => Treatment)
+    @JoinTable()
+    treatments: Treatment[];
+
+    constructor(time: Date, weight: number, temperature: number, diagnosis: string, notes: string, treatments: Treatment[]) {
+        this.time = time;
+        this.weight = weight;
+        this.temperature = temperature;
+        this.diagnosis = diagnosis;
+        this.notes = notes;
+        this.treatments = treatments;
+    }
 }
