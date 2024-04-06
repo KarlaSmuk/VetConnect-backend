@@ -101,6 +101,3 @@ export const getAllOtps:RequestHandler = async (req, res, next) => {
     }
 };
 
-export const setPassword:RequestHandler = async (req, res, next) => {
-};
-

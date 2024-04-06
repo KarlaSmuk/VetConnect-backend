@@ -11,7 +11,7 @@ export class Supply {
     name: string
 
     @Column()
-    description: string
+    description?: string
 
     @Column()
     stockQuantity: number
@@ -27,5 +27,12 @@ export class Supply {
     @ManyToOne(() => VeterinaryClinic, (clinic) => clinic.supply)
     clinic: VeterinaryClinic;
 
+    constructor(name: string, description: string, stockQuantity: number, minimumRequired: number, clinic: VeterinaryClinic) {
+        this.name = name;
+        this.description = description;
+        this.stockQuantity = stockQuantity;
+        this.minimumRequired = minimumRequired;
+        this.clinic = clinic;
+    }
    
 }

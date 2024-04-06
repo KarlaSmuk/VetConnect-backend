@@ -32,6 +32,12 @@ export class VeterinaryClinic {
     @Column({nullable: true})
     webAddress?: string
 
+    @Column({default: false})
+    isDeleted: boolean
+
+    @Column({type: 'timestamptz', default: null})
+    deletedAt: Date
+
     //relationships
 
     @OneToMany(() => Veterinarian, (vet) => vet.clinic)

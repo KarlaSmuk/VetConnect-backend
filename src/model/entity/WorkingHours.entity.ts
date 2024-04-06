@@ -16,8 +16,8 @@ export class WorkingHours {
     @Column({type: 'time'})
     closingTime: Date
 
-    @Column()
-    specialNotes: string //županija
+    @Column({ nullable: true })
+    specialNotes?: string //županija
 
     //relationships
 

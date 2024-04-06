@@ -34,12 +34,11 @@ export class Owner {
     pets: Pet[];
 
 
-    constructor(firstName: string, lastName: string, phoneNumber: string, user: User, photo?: Buffer) {
+    constructor(firstName: string, lastName: string, phoneNumber: string, user: User) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.user = user;
-        this.photo = photo;
     }
 
    

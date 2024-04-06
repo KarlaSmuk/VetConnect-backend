@@ -51,15 +51,15 @@ export const createVetUser:RequestHandler = async (req, res, next) => {
             throw new Error("Invalid role provided. Must be 'Veterinar'.");
         }
 
-        const createdUser = await AppDataSource
-            .manager
-            .save(new User(dto.email, dto.role))
- 
         const clinic = await AppDataSource
             .manager     
             .findOneByOrFail(VeterinaryClinic, {
                 id: clinicId
             })
+
+        const createdUser = await AppDataSource
+            .manager
+            .save(new User(dto.email, dto.role))
 
         const createdVet = await AppDataSource
             .manager
@@ -82,8 +82,8 @@ export const getAllUsers:RequestHandler = async (req, res, next) => {
     try {
 
         const users = await AppDataSource
-        .manager
-        .find(User)
+            .manager
+            .find(User)
 
         res.status(200).json({
             success: true,
@@ -107,10 +107,10 @@ export const getUser:RequestHandler = async (req, res, next) => {
     try {
 
         const user = await AppDataSource
-        .manager
-        .findOneByOrFail(User, {
-            id: id
-        })
+            .manager
+            .findOneByOrFail(User, {
+                id: id
+            })
 
         res.status(201).json({
             success: true,
@@ -125,7 +125,4 @@ export const getUser:RequestHandler = async (req, res, next) => {
     }
 
     
-};
-
-export const setPassword:RequestHandler = async (req, res, next) => {
 };

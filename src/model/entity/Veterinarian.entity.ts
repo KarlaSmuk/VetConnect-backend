@@ -25,6 +25,15 @@ export class Veterinarian {
     })
     photo?: Buffer
 
+    @Column({default: false})
+    isDeleted: boolean
+
+    @Column({
+        type: 'timestamptz',
+        nullable: true
+    })
+    deletedAt: Date | null
+
     //relationships
 
     @OneToOne(() => User)
@@ -37,12 +46,11 @@ export class Veterinarian {
     @OneToMany(() => Visit, (visit) => visit.veterinarian)
     visits: Visit[];
 
-    constructor(firstName: string, lastName: string, phoneNumber: string, user: User, clinic: VeterinaryClinic, photo?: Buffer) {
+    constructor(firstName: string, lastName: string, phoneNumber: string, user: User, clinic: VeterinaryClinic) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.phoneNumber = phoneNumber;
         this.user = user;
-        this.photo = photo;
         this.clinic = clinic;
     }
    

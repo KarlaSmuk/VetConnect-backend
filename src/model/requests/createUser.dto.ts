@@ -22,7 +22,4 @@ export class CreateUserDto {
     @IsNotEmpty()
     phoneNumber: string;
 
-    @IsOptional()
-    photo: Buffer;
-
 }

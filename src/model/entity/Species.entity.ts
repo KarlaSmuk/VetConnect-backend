@@ -18,4 +18,8 @@ export class Species {
 
     @OneToMany(() => Breed, (breed) => breed.species)
     breeds: Breed[];
+
+    constructor(name: string) {
+        this.name = name;
+    }
 }

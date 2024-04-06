@@ -25,5 +25,11 @@ export class Treatment {
     @OneToMany(() => InvoiceItem, (item) => item.treatment)
     item: InvoiceItem[];
 
+    constructor(name: string, description: string, price: number, clinic: VeterinaryClinic) {
+        this.name = name;
+        this.description = description;
+        this.price = price;
+        this.clinic = clinic;
+    }
    
 }

@@ -4,9 +4,13 @@ import { Species } from './Species.entity';
 import { Breed } from './Breed.entity';
 import { Appointment } from './Appointment.entity';
 import { Visit } from './Visit.entity';
+import { PetStatus } from '../../constants/petStatus.enum';
 
 @Entity()
 export class Pet {
+
+    //add maybe later that pet can be assigned to new owner
+
 
     @PrimaryGeneratedColumn("uuid")
     id: string
@@ -33,6 +37,21 @@ export class Pet {
     })
     photo: Buffer
 
+    //if pet dies dont show it but dont delete it
+
+    @Column({ 
+        type: 'enum', 
+        enum: PetStatus,
+        default: PetStatus.ALIVE
+    })
+    status: PetStatus;
+
+    @Column({ 
+        type: 'timestamp', 
+        nullable: true 
+    })
+    deceasedAt: Date | null;
+
     //relationships
 
     @ManyToOne(() => Owner, (owner) => owner.pets)
@@ -49,4 +68,15 @@ export class Pet {
 
     @OneToMany(() => Visit, (visit) => visit.pet)
     visits: Visit[];
+
+    constructor(name: string, dateOfBirth: Date, neutered: boolean, gender: string, color: string, owner: Owner, species: Species, breed: Breed) {
+        this.name = name;
+        this.dateOfBirth = dateOfBirth;
+        this.neutered = neutered;
+        this.gender = gender;
+        this.color = color;
+        this.owner = owner;
+        this.species = species;
+        this.breed = breed;
+    }
 }

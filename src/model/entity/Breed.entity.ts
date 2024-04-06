@@ -18,4 +18,9 @@ export class Breed {
 
     @ManyToOne(() => Species, (species) => species.breeds)
     species: Species;
+
+    constructor(name: string, species: Species) {
+        this.name = name;
+        this.species = species
+    }
 }
