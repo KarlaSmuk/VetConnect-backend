@@ -37,12 +37,14 @@ export class Visit {
     @JoinTable()
     treatments: Treatment[];
 
-    constructor(time: Date, weight: number, temperature: number, diagnosis: string, notes: string, treatments: Treatment[]) {
+    constructor(time: Date, weight: number, temperature: number, diagnosis: string, notes: string, pet: Pet, veterinarian: Veterinarian, treatments: Treatment[]) {
         this.time = time;
         this.weight = weight;
         this.temperature = temperature;
         this.diagnosis = diagnosis;
         this.notes = notes;
+        this.pet = pet;
+        this.veterinarian = veterinarian;
         this.treatments = treatments;
     }
 }

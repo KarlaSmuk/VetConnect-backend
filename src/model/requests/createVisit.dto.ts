@@ -1,10 +1,10 @@
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
 
 export class CreateVisitDto {
     
-    @IsDate()
+    @IsString()
     @IsNotEmpty()
-    time: Date;
+    time: string;
 
     @IsNumber()
     @IsNotEmpty()
@@ -21,4 +21,8 @@ export class CreateVisitDto {
     @IsString()
     @IsOptional()
     notes: string;
+
+    @IsUUID(4, { each: true })
+    @IsOptional()
+    treatmentIds: string[];
 }

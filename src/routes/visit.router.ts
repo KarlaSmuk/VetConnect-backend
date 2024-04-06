@@ -6,8 +6,9 @@ import { validateRequest } from "../middleware/validateRequest";
 const router = Router();
 
 router.post("/", validateRequest(CreateVisitDto), createVisit);
-router.post("/:petId", getVisitsByPetId);
-router.get("/:visitId", getVisitById);
+router.get("/", getVisitById);
+router.get("/:petId", getVisitsByPetId);
+
 
 
 export default router;
