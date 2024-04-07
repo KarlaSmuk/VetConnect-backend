@@ -23,6 +23,8 @@ app.use('/api/otp', otpRoute)
 app.use('/api/clinic', vetClinicRoute)
 app.use('/api/pet', petRoute)
 app.use('/api/visit', visitRoute)
+app.use('/api/invoice', visitRoute)
+
 
 app.listen(PORT, () => {
     console.log(`listening on port http://localhost:${PORT}`)

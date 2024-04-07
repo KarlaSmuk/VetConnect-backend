@@ -13,10 +13,10 @@ export class Visit {
     @Column({type: 'timestamptz'})
     time: Date
 
-    @Column({ type: 'double precision' })
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     weight: number
 
-    @Column({ type: 'double precision' })
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     temperature: number
 
     @Column()

@@ -11,6 +11,5 @@ export class CreateTreatmentDto {
     description: string;
 
     @IsNumber()
-    @IsNotEmpty()
     price: number;
 }

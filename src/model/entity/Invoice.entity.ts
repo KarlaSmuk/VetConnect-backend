@@ -9,9 +9,9 @@ export class Invoice {
     id: string
 
     @Column({type: 'timestamptz', default: () => 'CURRENT_TIMESTAMP'})
-    issueDate: Date
+    createdAt: Date
 
-    @Column('double precision')
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     totalPrice: number
 
     //status of payment?
@@ -24,6 +24,12 @@ export class Invoice {
 
     @OneToMany(() => InvoiceItem, (item) => item.invoice)
     items: InvoiceItem[];
+
+
+    constructor(totalPrice: number, visit: Visit) {
+        this.totalPrice = totalPrice;
+        this.visit = visit;
+    }
 
    
 }

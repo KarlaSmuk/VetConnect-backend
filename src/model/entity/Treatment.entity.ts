@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, NumericType } from 'typeorm';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
 import { InvoiceItem } from './InvoiceItem.entity';
 import { Visit } from './Visit.entity';
@@ -15,7 +15,7 @@ export class Treatment {
     @Column()
     description: string
 
-    @Column('double precision')
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     price: number
 
     //relationships

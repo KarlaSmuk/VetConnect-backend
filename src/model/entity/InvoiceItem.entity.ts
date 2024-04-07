@@ -11,8 +11,10 @@ export class InvoiceItem {
     @Column()
     quantity: number
 
-    @Column('double precision')
+    @Column({ type: 'numeric', precision: 10, scale: 2 })
     totalPrice: number
+
+    //maybe add later discount variable?
 
     //relationships
 
@@ -21,5 +23,12 @@ export class InvoiceItem {
 
     @ManyToOne(() => Invoice, (invoice) => invoice.items)
     invoice: Invoice;
+
+    constructor(quantity: number, totalPrice: number, invoice: Invoice, treatment: Treatment) {
+        this.quantity = quantity;
+        this.totalPrice = totalPrice;
+        this.invoice = invoice;
+        this.treatment = treatment;
+    }
    
 }
