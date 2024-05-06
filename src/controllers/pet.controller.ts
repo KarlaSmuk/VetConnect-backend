@@ -7,64 +7,68 @@ import { Species } from '../model/entity/Species.entity';
 import { Breed } from '../model/entity/Breed.entity';
 import { Owner } from '../model/entity/Owner.entity';
 
-export const createPet:RequestHandler = async (req, res) => {
+const ownerRepository = AppDataSource.getRepository(Owner)
+const speciesRepository = AppDataSource.getRepository(Species)
+const breedRepository = AppDataSource.getRepository(Breed)
+const petRepository = AppDataSource.getRepository(Pet)
 
-    const {ownerId} = req.params;
+export const createPet: RequestHandler = async (req, res) => {
+
+    const { ownerId } = req.params;
     const dto: CreatePetDto = req.body;
 
     try {
 
-        const owner = await AppDataSource
-            .manager
-            .findOneByOrFail(Owner, {
+        const owner = await ownerRepository
+            .findOneByOrFail({
                 id: ownerId
             })
 
         // Check if the species exists, if not create it
-        let speciesEntity = await AppDataSource
-            .getRepository(Species)
-            .findOne({ where: { name: dto.speciesName } });
+        let speciesEntity = await speciesRepository
+            .findOneByOrFail({
+                name: dto.speciesName
+            });
 
         if (!speciesEntity) {
-            speciesEntity = await AppDataSource
-                .manager
+            speciesEntity = await speciesRepository
                 .save(new Species(dto.speciesName));
         }
 
         //Check if the breed exists within the species, if not create it
-        let breedEntity = await AppDataSource
-        .getRepository(Breed)
-        .findOne({ where: { name: dto.breedName, species: speciesEntity } });
+        let breedEntity = await breedRepository
+            .findOneByOrFail({
+                name: dto.breedName,
+                species: speciesEntity
+            });
 
         if (!breedEntity) {
-            breedEntity = await AppDataSource
-                .manager
+            breedEntity = await breedRepository
                 .save(new Breed(dto.breedName, speciesEntity));
         }
-        
+
         //create pet
 
-        const createdPet = await AppDataSource
-            .manager
+        const createdPet = await petRepository
             .save(new Pet(dto.name, dto.dateOfBirth, dto.neutered, dto.gender, dto.color, owner, speciesEntity, breedEntity))
 
         res.status(200).json({
             success: true,
             message: createdPet
-          });
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 };
 
-export const getAllPets:RequestHandler = async (req, res) => {
+export const getAllPets: RequestHandler = async (req, res) => {
 
-    const {ownerId} = req.query;
+    const { ownerId } = req.query;
 
     if (!ownerId) {
         return res.status(400).send({ success: false, message: "Owner ID is required." });
@@ -72,9 +76,8 @@ export const getAllPets:RequestHandler = async (req, res) => {
 
     try {
 
-        const owner = await AppDataSource
-            .manager
-            .findOneByOrFail(Owner, {
+        const owner = await ownerRepository
+            .findOneByOrFail({
                 id: ownerId?.toString()
             })
 
@@ -87,26 +90,25 @@ export const getAllPets:RequestHandler = async (req, res) => {
         res.status(200).json({
             success: true,
             message: pets
-          });
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 };
 
-export const getPet:RequestHandler = async (req, res) => {
+export const getPet: RequestHandler = async (req, res) => {
 
-    const {petId} = req.params;
+    const { petId } = req.params;
 
     try {
 
-        const pet = await AppDataSource
-            .manager
-            .findOneByOrFail(Pet, {
+        const pet = await petRepository
+            .findOneByOrFail({
                 id: petId
             })
 
@@ -114,44 +116,15 @@ export const getPet:RequestHandler = async (req, res) => {
             success: true,
             message: pet
         });
-        
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(400).send({
-                success: false,
-                message: error.message
-              });
-        }
-    }
-
-    
-};
-
-export const getUser:RequestHandler = async (req, res) => {
-
-    const {id} = req.params;
-
-    try {
-
-        const user = await AppDataSource
-        .manager
-        .findOneByOrFail(User, {
-            id: id
-        })
-
-        res.status(201).json({
-            success: true,
-            message: user
-        });
 
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 
-    
+
 };

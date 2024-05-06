@@ -9,9 +9,16 @@ import { Veterinarian } from '../model/entity/Veterinarian.entity';
 import { Invoice } from '../model/entity/Invoice.entity';
 import { InvoiceItem } from '../model/entity/InvoiceItem.entity';
 
-export const createVisit:RequestHandler = async (req, res) => {
+const petRepository = AppDataSource.getRepository(Pet)
+const treatmentRepository = AppDataSource.getRepository(Treatment)
+const visitRepository = AppDataSource.getRepository(Visit)
+const vetRepository = AppDataSource.getRepository(Veterinarian)
+const invoiceRepository = AppDataSource.getRepository(Invoice)
+const inoviceItemRepository = AppDataSource.getRepository(InvoiceItem)
 
-    const {petId, vetId} = req.query;
+export const createVisit: RequestHandler = async (req, res) => {
+
+    const { petId, vetId } = req.query;
     const dto: CreateVisitDto = req.body;
 
     if (!petId) {
@@ -24,32 +31,25 @@ export const createVisit:RequestHandler = async (req, res) => {
 
     try {
 
-        const petRepository = AppDataSource.getRepository(Pet)
-        const treatmentRepository = AppDataSource.getRepository(Treatment)
-        const visitRepository = AppDataSource.getRepository(Visit)
-        const vetRepository = AppDataSource.getRepository(Veterinarian)
-        const invoiceRepository = AppDataSource.getRepository(Invoice)
-        const inoviceItemRepository = AppDataSource.getRepository(InvoiceItem)
-
         const pet = await petRepository
-            .findOneByOrFail({id: petId.toString()})
+            .findOneByOrFail({ id: petId.toString() })
 
         const vet = await vetRepository
-            .findOneByOrFail({id: vetId.toString()})
+            .findOneByOrFail({ id: vetId.toString() })
 
         const visit = await visitRepository.save(new Visit(new Date(dto.time), dto.weight, dto.temperature, dto.diagnosis, dto.notes, pet, vet));
 
 
-        if(dto.items){
+        if (dto.items) {
             const treatments = await Promise.all(
-                    dto.items.map(async item =>{
-                        const treatment = await treatmentRepository.findOneByOrFail({ id: item.treatmentId })
-                        return {
-                            treatment: treatment,
-                            quantity: item.quantity,
-                            price: item.quantity * treatment.price
-                        }
+                dto.items.map(async item => {
+                    const treatment = await treatmentRepository.findOneByOrFail({ id: item.treatmentId })
+                    return {
+                        treatment: treatment,
+                        quantity: item.quantity,
+                        price: item.quantity * treatment.price
                     }
+                }
                 )
             )
 
@@ -62,26 +62,26 @@ export const createVisit:RequestHandler = async (req, res) => {
                 })
             );
         }
-        
 
-        
+
+
         res.status(200).json({
             success: true,
             message: `Succesfully added visit for pet ${petId}`
-          });
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 };
 
-export const getVisitsByPetId:RequestHandler = async (req, res) => {
+export const getVisitsByPetId: RequestHandler = async (req, res) => {
 
-    const {petId} = req.params;
+    const { petId } = req.params;
 
     if (!petId) {
         throw new BadRequestError('Pet ID is required.')
@@ -89,11 +89,8 @@ export const getVisitsByPetId:RequestHandler = async (req, res) => {
 
     try {
 
-        const petRepository = AppDataSource.getRepository(Pet)
-        const visitRepository = AppDataSource.getRepository(Visit)
-
         const pet = await petRepository
-            .findOneByOrFail({id: petId})
+            .findOneByOrFail({ id: petId })
 
         const visits = await visitRepository
             .createQueryBuilder("visit")
@@ -104,28 +101,26 @@ export const getVisitsByPetId:RequestHandler = async (req, res) => {
         res.status(200).json({
             success: true,
             message: visits
-          });
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 };
 
-export const getVisitById:RequestHandler = async (req, res) => {
+export const getVisitById: RequestHandler = async (req, res) => {
 
-    const {visitId} = req.query;
+    const { visitId } = req.query;
 
     if (!visitId) {
         throw new BadRequestError('Visit ID is required.')
     }
 
     try {
-
-        const visitRepository = AppDataSource.getRepository(Visit)
 
         const visit = await visitRepository
             .createQueryBuilder("visit")
@@ -136,13 +131,13 @@ export const getVisitById:RequestHandler = async (req, res) => {
         res.status(200).json({
             success: true,
             message: visit
-          });
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 };

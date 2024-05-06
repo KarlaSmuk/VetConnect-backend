@@ -4,9 +4,13 @@ import { Veterinarian } from "../model/entity/Veterinarian.entity";
 import { BadRequestError } from "../middleware/errorHandling";
 import { VeterinaryClinic } from "../model/entity/VeterinaryClinic.entity";
 
-export const getVetsByClinicId:RequestHandler = async (req, res) => {
 
-    const {clinicId} = req.params
+const clinicRepository = AppDataSource.getRepository(VeterinaryClinic)
+const vetRepository = AppDataSource.getRepository(Veterinarian)
+
+export const getVetsByClinicId: RequestHandler = async (req, res) => {
+
+    const { clinicId } = req.params
 
     if (!clinicId) {
         throw new BadRequestError('Clinic ID is required.')
@@ -14,14 +18,11 @@ export const getVetsByClinicId:RequestHandler = async (req, res) => {
 
     try {
 
-        const clinicRepository = AppDataSource.getRepository(VeterinaryClinic)
-        const vetRepository = AppDataSource.getRepository(Veterinarian)
-
         const clinic = await clinicRepository
-            .findOneByOrFail({id: clinicId})
+            .findOneByOrFail({ id: clinicId })
 
         const vets = await vetRepository
-            .findBy({clinic: clinic})
+            .findBy({ clinic: clinic })
 
         res.status(201).json({
             success: true,
@@ -33,9 +34,9 @@ export const getVetsByClinicId:RequestHandler = async (req, res) => {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 
-    
+
 };

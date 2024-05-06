@@ -5,17 +5,16 @@ import otpGenerator from 'otp-generator';
 import { User } from '../model/entity/User.entity';
 import { sendOtp } from '../utils/mailSender';
 
-export const createOtp:RequestHandler = async (req, res) => {
+const otpRepository = AppDataSource.getRepository(OtpData)
+const userRepository = AppDataSource.getRepository(User)
 
-    const {userId} = req.params;
+export const createOtp: RequestHandler = async (req, res) => {
+
+    const { userId } = req.params;
 
     try {
 
-        const userRepository = AppDataSource.getRepository(User)
-        const otpRepository = AppDataSource.getRepository(OtpData)
-        
-
-        const user = await userRepository 
+        const user = await userRepository
             .findOneByOrFail({
                 id: userId
             })
@@ -44,28 +43,25 @@ export const createOtp:RequestHandler = async (req, res) => {
                 message: 'Failed to send OTP.'
             });
         }
-        
+
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(500).send({
                 success: false,
                 message: 'An error occurred while sending the OTP.'
-              });
+            });
         }
     }
 
-    
+
 };
 
-export const verifyOtp:RequestHandler = async (req, res) => {
+export const verifyOtp: RequestHandler = async (req, res) => {
 
-    const {userId} = req.params;
+    const { userId } = req.params;
     const enteredOtp = req.body.otp
 
     try {
-
-        const otpRepository = AppDataSource.getRepository(OtpData)
-        const userRepository = AppDataSource.getRepository(User)
 
         const user = await userRepository
             .findOneByOrFail({
@@ -80,11 +76,11 @@ export const verifyOtp:RequestHandler = async (req, res) => {
             .getOneOrFail()
 
         //update otp for user
-        
+
         otpUser.attemptsCount = otpUser.attemptsCount + 1
         otpUser.lastAttemptTime = new Date()
-        
-        if(otpUser.otp === Number(enteredOtp) && otpUser.attemptsCount < 3){
+
+        if (otpUser.otp === Number(enteredOtp) && otpUser.attemptsCount < 3) {
 
             otpUser.isUsed = true
             await otpRepository.save(otpUser);
@@ -92,8 +88,8 @@ export const verifyOtp:RequestHandler = async (req, res) => {
             res.status(200).json({
                 success: true,
                 message: 'Successful otp verification.'
-                });
-            
+            });
+
             return
         }
 
@@ -103,13 +99,13 @@ export const verifyOtp:RequestHandler = async (req, res) => {
             success: false,
             message: 'Failed otp verification.'
         });
-        
+
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
-              });
+            });
         }
     }
 };
