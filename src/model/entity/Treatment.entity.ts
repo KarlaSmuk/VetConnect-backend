@@ -26,8 +26,8 @@ export class Treatment {
     @OneToMany(() => InvoiceItem, (item) => item.treatment)
     item: InvoiceItem[];
 
-    @ManyToMany(() => Visit, visit => visit.treatments) 
-    visits: Visit[];
+    // @ManyToMany(() => Visit, visit => visit.treatments) 
+    // visits: Visit[];
     
     constructor(name: string, description: string, price: number, clinic: VeterinaryClinic) {
         this.name = name;

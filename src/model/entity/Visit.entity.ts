@@ -33,11 +33,11 @@ export class Visit {
     @ManyToOne(() => Veterinarian, (vet) => vet.visits)
     veterinarian: Veterinarian;
 
-    @ManyToMany(() => Treatment)
-    @JoinTable()
-    treatments: Treatment[];
+    // @ManyToMany(() => Treatment)
+    // @JoinTable()
+    // treatments: Treatment[];
 
-    constructor(time: Date, weight: number, temperature: number, diagnosis: string, notes: string, pet: Pet, veterinarian: Veterinarian, treatments: Treatment[]) {
+    constructor(time: Date, weight: number, temperature: number, diagnosis: string, notes: string, pet: Pet, veterinarian: Veterinarian) {
         this.time = time;
         this.weight = weight;
         this.temperature = temperature;
@@ -45,6 +45,6 @@ export class Visit {
         this.notes = notes;
         this.pet = pet;
         this.veterinarian = veterinarian;
-        this.treatments = treatments;
+        //this.treatments = treatments;
     }
 }

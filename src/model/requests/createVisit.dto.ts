@@ -1,4 +1,5 @@
-import { IsDate, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
 
 export class CreateVisitDto {
     
@@ -22,7 +23,25 @@ export class CreateVisitDto {
     @IsOptional()
     notes: string;
 
-    @IsUUID(4, { each: true })
+    // @IsUUID(4, { each: true })
+    // @IsOptional()
+    // treatmentIds: string[];
+
+    @IsArray()
     @IsOptional()
-    treatmentIds: string[];
+    @ValidateNested({ each: true })
+    @Type(() => CreateInvoiceItemDto)
+    items: CreateInvoiceItemDto[];
+}
+
+class CreateInvoiceItemDto {
+    
+    @IsUUID()
+    @IsNotEmpty()
+    treatmentId: string;
+
+    @IsNotEmpty()
+    @IsNumber()
+    quantity: number;
+    
 }

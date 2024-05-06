@@ -3,6 +3,7 @@ import { AppDataSource } from "../config/db";
 import { OtpData } from '../model/entity/OtpData.entity';
 import otpGenerator from 'otp-generator';
 import { User } from '../model/entity/User.entity';
+import { sendOtp } from '../utils/mailSender';
 
 export const createOtp:RequestHandler = async (req, res) => {
 
@@ -10,9 +11,12 @@ export const createOtp:RequestHandler = async (req, res) => {
 
     try {
 
-        const user = await AppDataSource
-            .manager     
-            .findOneByOrFail(User, {
+        const userRepository = AppDataSource.getRepository(User)
+        const otpRepository = AppDataSource.getRepository(OtpData)
+        
+
+        const user = await userRepository 
+            .findOneByOrFail({
                 id: userId
             })
 
@@ -22,12 +26,12 @@ export const createOtp:RequestHandler = async (req, res) => {
             specialChars: false
         });
 
-        const otpUser = await AppDataSource
-            .manager
+        const otpUser = await otpRepository
             .save(new OtpData(Number(otp), user))
 
 
         //when is created send email to user
+        sendOtp(user.email, Number(otp))
 
         res.status(200).json({
             success: true,
@@ -46,56 +50,52 @@ export const createOtp:RequestHandler = async (req, res) => {
     
 };
 
-export const getOtp:RequestHandler = async (req, res) => {
+export const verifyOtp:RequestHandler = async (req, res) => {
 
     const {userId} = req.params;
+    const enteredOtp = req.body.otp
 
     try {
 
-        const user = await AppDataSource
-            .manager
-            .findOneByOrFail(User, {
+        const otpRepository = AppDataSource.getRepository(OtpData)
+        const userRepository = AppDataSource.getRepository(User)
+
+        const user = await userRepository
+            .findOneByOrFail({
                 id: userId
             })
 
-        const otpUser = await AppDataSource
-            .getRepository(OtpData)
+        const otpUser = await otpRepository
             .createQueryBuilder("otp")
             .where("otp.user = :userId", { userId: user.id })
             .andWhere("otp.expiration > :now", { now: new Date() })
             .andWhere("otp.isUsed = :isUsed", { isUsed: false })
             .getOneOrFail()
 
-
-        //when is created send email to user
-
-        res.status(200).json({
-            success: true,
-            message: otpUser
-            });
+        //update otp for user
         
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(400).send({
-                success: false,
-                message: error.message
-              });
+        otpUser.attemptsCount = otpUser.attemptsCount + 1
+        otpUser.lastAttemptTime = new Date()
+        
+        if(otpUser.otp === Number(enteredOtp) && otpUser.attemptsCount < 3){
+
+            otpUser.isUsed = true
+            await otpRepository.save(otpUser);
+
+            res.status(200).json({
+                success: true,
+                message: 'Successful otp verification.'
+                });
+            
+            return
         }
-    }
-};
 
-export const getAllOtps:RequestHandler = async (req, res) => {
+        await otpRepository.save(otpUser);
 
-    try {
-
-        const otpUser = await AppDataSource
-            .manager
-            .find(OtpData)
-
-        res.status(200).json({
-            success: true,
-            message: otpUser
-            });
+        res.status(400).json({
+            success: false,
+            message: 'Failed otp verification.'
+        });
         
     } catch (error: unknown) {
         if (error instanceof Error) {

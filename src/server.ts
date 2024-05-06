@@ -8,6 +8,7 @@ import otpRoute from './routes/otp.router';
 import vetClinicRoute from './routes/clinic.router';
 import petRoute from './routes/pet.router';
 import visitRoute from './routes/visit.router';
+import invoiceRoute from './routes/invoice.router';
 
 dotenv.config();
 
@@ -23,7 +24,7 @@ app.use('/api/otp', otpRoute)
 app.use('/api/clinic', vetClinicRoute)
 app.use('/api/pet', petRoute)
 app.use('/api/visit', visitRoute)
-app.use('/api/invoice', visitRoute)
+app.use('/api/invoice', invoiceRoute)
 
 
 app.listen(PORT, () => {

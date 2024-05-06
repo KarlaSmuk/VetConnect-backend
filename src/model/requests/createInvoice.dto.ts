@@ -1,4 +1,4 @@
-import { IsUUID, IsNotEmpty, IsArray, ValidateNested, IsNumber, IsDate } from 'class-validator';
+import { IsUUID, IsNotEmpty, IsArray, ValidateNested, IsNumber } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class CreateInvoiceItemDto {

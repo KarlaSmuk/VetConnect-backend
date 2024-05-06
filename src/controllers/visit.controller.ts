@@ -6,6 +6,8 @@ import { Visit } from '../model/entity/Visit.entity';
 import { CreateVisitDto } from '../model/requests/createVisit.dto';
 import { Treatment } from '../model/entity/Treatment.entity';
 import { Veterinarian } from '../model/entity/Veterinarian.entity';
+import { Invoice } from '../model/entity/Invoice.entity';
+import { InvoiceItem } from '../model/entity/InvoiceItem.entity';
 
 export const createVisit:RequestHandler = async (req, res) => {
 
@@ -26,20 +28,42 @@ export const createVisit:RequestHandler = async (req, res) => {
         const treatmentRepository = AppDataSource.getRepository(Treatment)
         const visitRepository = AppDataSource.getRepository(Visit)
         const vetRepository = AppDataSource.getRepository(Veterinarian)
+        const invoiceRepository = AppDataSource.getRepository(Invoice)
+        const inoviceItemRepository = AppDataSource.getRepository(InvoiceItem)
 
         const pet = await petRepository
             .findOneByOrFail({id: petId.toString()})
 
         const vet = await vetRepository
             .findOneByOrFail({id: vetId.toString()})
+
+        const visit = await visitRepository.save(new Visit(new Date(dto.time), dto.weight, dto.temperature, dto.diagnosis, dto.notes, pet, vet));
+
+
+        if(dto.items){
+            const treatments = await Promise.all(
+                    dto.items.map(async item =>{
+                        const treatment = await treatmentRepository.findOneByOrFail({ id: item.treatmentId })
+                        return {
+                            treatment: treatment,
+                            quantity: item.quantity,
+                            price: item.quantity * treatment.price
+                        }
+                    }
+                )
+            )
+
+            const totalPrice = treatments.reduce((sum, item) => sum + item.price, 0);
+            const invoice = await invoiceRepository.save(new Invoice(totalPrice, visit));
+
+            await Promise.all(
+                treatments.map(item => {
+                    return inoviceItemRepository.save(new InvoiceItem(item.quantity, item.price, invoice, item.treatment));
+                })
+            );
+        }
         
-        const treatmentPromises = dto.treatmentIds.map(treatmentId =>
-            treatmentRepository.findOneByOrFail({ id: treatmentId })
-        );
 
-        const treatments = await Promise.all(treatmentPromises);
-
-        await visitRepository.save(new Visit(new Date(dto.time), dto.weight, dto.temperature, dto.diagnosis, dto.notes, pet, vet, treatments));
         
         res.status(200).json({
             success: true,
