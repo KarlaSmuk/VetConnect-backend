@@ -30,19 +30,26 @@ export const createOtp:RequestHandler = async (req, res) => {
             .save(new OtpData(Number(otp), user))
 
 
-        //when is created send email to user
-        sendOtp(user.email, Number(otp))
+        //sending email
+        const emailSent = await sendOtp(user.email, Number(otp))
 
-        res.status(200).json({
-            success: true,
-            message: otpUser
+        if (emailSent) {
+            res.status(200).json({
+                success: true,
+                message: 'OTP sent successfully.'
             });
+        } else {
+            res.status(500).json({
+                success: false,
+                message: 'Failed to send OTP.'
+            });
+        }
         
     } catch (error: unknown) {
         if (error instanceof Error) {
-            res.status(400).send({
+            res.status(500).send({
                 success: false,
-                message: error.message
+                message: 'An error occurred while sending the OTP.'
               });
         }
     }
