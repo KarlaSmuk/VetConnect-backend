@@ -136,29 +136,3 @@ export const getUser:RequestHandler = async (req, res) => {
     
 };
 
-export const getOwners:RequestHandler = async (req, res) => {
-
-    try {
-
-        const owners = await AppDataSource
-            .manager
-            .findBy(User, {
-                role: UserRole.OWNER
-            })
-
-        res.status(201).json({
-            success: true,
-            message: owners
-        });
-
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(400).send({
-                success: false,
-                message: error.message
-              });
-        }
-    }
-
-    
-};

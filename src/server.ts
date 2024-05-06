@@ -9,6 +9,8 @@ import vetClinicRoute from './routes/clinic.router';
 import petRoute from './routes/pet.router';
 import visitRoute from './routes/visit.router';
 import invoiceRoute from './routes/invoice.router';
+import ownersRoute from './routes/owner.router';
+import vetsRoute from './routes/vet.router';
 
 dotenv.config();
 
@@ -20,6 +22,8 @@ setUpMiddleware(app);
 Application.main();
 
 app.use('/api/user', userRoute)
+app.use('/api/owners', ownersRoute)
+app.use('/api/veterinarians', vetsRoute)
 app.use('/api/otp', otpRoute)
 app.use('/api/clinic', vetClinicRoute)
 app.use('/api/pet', petRoute)
