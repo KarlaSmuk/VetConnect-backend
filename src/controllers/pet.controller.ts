@@ -66,7 +66,7 @@ export const createPet: RequestHandler = async (req, res) => {
     }
 };
 
-export const getAllPets: RequestHandler = async (req, res) => {
+export const getPetsByOwnerId: RequestHandler = async (req, res) => {
 
     const { ownerId } = req.query;
 

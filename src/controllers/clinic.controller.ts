@@ -44,7 +44,10 @@ export const getAllVetClinics: RequestHandler = async (req, res) => {
 
     try {
 
-        const clinics = await clinicRepository.find()
+        const clinics = await clinicRepository
+            .createQueryBuilder('clinic')
+            .innerJoinAndSelect('clinic.workingHours', 'workingHours')
+            .getMany()
 
         res.status(200).json({
             success: true,
@@ -63,16 +66,17 @@ export const getAllVetClinics: RequestHandler = async (req, res) => {
 
 };
 
-export const getVetClinic: RequestHandler = async (req, res) => {
+export const getClinicById: RequestHandler = async (req, res) => {
 
-    const { id } = req.params;
+    const { clinicId } = req.params;
 
     try {
 
         const clinic = await clinicRepository
-            .findOneByOrFail({
-                id: id
-            })
+            .createQueryBuilder('clinic')
+            .innerJoinAndSelect('clinics.workingHours', 'workingHours')
+            .where('clinic.id = :clinicId', {clinicId: clinicId})
+            .getOneOrFail()
 
         res.status(201).json({
             success: true,
@@ -230,7 +234,6 @@ export const deleteWorkingHours: RequestHandler = async (req, res) => {
 };
 
 //supplies
-
 export const addSupplies: RequestHandler = async (req, res) => {
 
     const { clinicId } = req.params;
@@ -261,7 +264,7 @@ export const addSupplies: RequestHandler = async (req, res) => {
     }
 };
 
-export const getAllSuppliesForClinic: RequestHandler = async (req, res) => {
+export const getSuppliesByClinicId: RequestHandler = async (req, res) => {
 
     const { clinicId } = req.params;
 
@@ -327,7 +330,6 @@ export const updateSupply: RequestHandler = async (req, res) => {
 };
 
 //treatments
-
 export const addTreatments: RequestHandler = async (req, res) => {
 
     const { clinicId } = req.params;
@@ -361,7 +363,7 @@ export const addTreatments: RequestHandler = async (req, res) => {
     }
 };
 
-export const getAllTreatmentsForClinic: RequestHandler = async (req, res) => {
+export const getTreatmentsByClinicId: RequestHandler = async (req, res) => {
 
     const { clinicId } = req.params;
 
