@@ -25,8 +25,7 @@ export const createOtp: RequestHandler = async (req, res) => {
             specialChars: false
         });
 
-        const otpUser = await otpRepository
-            .save(new OtpData(Number(otp), user))
+        await otpRepository.save(new OtpData(Number(otp), user))
 
 
         //sending email

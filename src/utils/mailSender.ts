@@ -14,7 +14,7 @@ export const sendOtp = async (email: string, otp: number) => {
         }
       });
 
-    var mailOptions = {
+    const mailOptions = {
         from: 'VetConnect ' + process.env.MAIL_USER,
         to: email,
         subject: 'Jednokratna lozinka za pristup VetConnect',

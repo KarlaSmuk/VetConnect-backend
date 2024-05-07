@@ -1,7 +1,6 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany, ManyToMany, NumericType } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { VeterinaryClinic } from './VeterinaryClinic.entity';
 import { InvoiceItem } from './InvoiceItem.entity';
-import { Visit } from './Visit.entity';
 
 @Entity()
 export class Treatment {

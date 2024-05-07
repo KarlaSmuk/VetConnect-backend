@@ -1,6 +1,5 @@
 import { RequestHandler } from 'express';
 import { AppDataSource } from "../config/db";
-import { User } from '../model/entity/User.entity';
 import { CreatePetDto } from '../model/requests/createPet.dto';
 import { Pet } from '../model/entity/Pet.entity';
 import { Species } from '../model/entity/Species.entity';
