@@ -9,9 +9,6 @@ import { PetStatus } from '../../constants/petStatus.enum';
 @Entity()
 export class Pet {
 
-    //add maybe later that pet can be assigned to new owner
-
-
     @PrimaryGeneratedColumn("uuid")
     id: string
 
