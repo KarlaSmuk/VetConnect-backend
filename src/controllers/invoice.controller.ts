@@ -39,7 +39,7 @@ export const getInvoice: RequestHandler = async (req, res) => {
             }))
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: result
         });
@@ -82,7 +82,7 @@ export const getInvoiceByVisit: RequestHandler = async (req, res) => {
             }))
         }
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: result
         });

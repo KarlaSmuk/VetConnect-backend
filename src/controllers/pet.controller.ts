@@ -51,7 +51,7 @@ export const createPet: RequestHandler = async (req, res) => {
         const createdPet = await petRepository
             .save(new Pet(dto.name, dto.dateOfBirth, dto.neutered, dto.gender, dto.color, owner, speciesEntity, breedEntity))
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: createdPet
         });
@@ -86,7 +86,7 @@ export const getPetsByOwnerId: RequestHandler = async (req, res) => {
             .where("pet.owner = :ownerId", { ownerId: owner.id })
             .getMany()
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: pets
         });
@@ -111,7 +111,7 @@ export const getPet: RequestHandler = async (req, res) => {
                 id: petId
             })
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: pet
         });

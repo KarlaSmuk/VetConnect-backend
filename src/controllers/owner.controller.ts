@@ -11,7 +11,7 @@ export const getOwners: RequestHandler = async (req, res) => {
 
         const owners = await ownerRepository.find()
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: owners
         });

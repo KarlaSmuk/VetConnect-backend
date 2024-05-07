@@ -65,7 +65,7 @@ export const createVisit: RequestHandler = async (req, res) => {
 
 
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Succesfully added visit for pet ${petId}`
         });
@@ -98,7 +98,7 @@ export const getVisitsByPetId: RequestHandler = async (req, res) => {
             .where("visit.petId = :petId", { petId: pet.id })
             .getMany()
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: visits
         });
@@ -128,7 +128,7 @@ export const getVisitById: RequestHandler = async (req, res) => {
             .where("visit.id = :visitId", { visitId })
             .getOneOrFail()
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: visit
         });

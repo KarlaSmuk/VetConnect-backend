@@ -24,7 +24,7 @@ export const getVetsByClinicId: RequestHandler = async (req, res) => {
         const vets = await vetRepository
             .findBy({ clinic: clinic })
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: vets
         });

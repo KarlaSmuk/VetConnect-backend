@@ -26,7 +26,7 @@ export const createVetClinic: RequestHandler = async (req, res) => {
         const createdClinic = await clinicRepository
             .save(new VeterinaryClinic(dto.oib, dto.name, dto.address, dto.county, dto.phoneNumber, dto.email, dto.webAddress))
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: createdClinic
         });
@@ -49,7 +49,7 @@ export const getAllVetClinics: RequestHandler = async (req, res) => {
             .innerJoinAndSelect('clinic.workingHours', 'workingHours')
             .getMany()
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: clinics
         });
@@ -78,7 +78,7 @@ export const getClinicById: RequestHandler = async (req, res) => {
             .where('clinic.id = :clinicId', {clinicId: clinicId})
             .getOneOrFail()
 
-        res.status(201).json({
+        return res.status(201).json({
             success: true,
             message: clinic
         });
@@ -138,7 +138,10 @@ export const addWorkingHours: RequestHandler = async (req, res) => {
 
 
 
-        res.status(200).json({ status: true, message: "Working hours added successfully." });
+        return res.status(200).json({ 
+            status: true, 
+            message: "Working hours added successfully." 
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
@@ -184,7 +187,10 @@ export const updateWorkingHours: RequestHandler = async (req, res) => {
 
 
 
-        res.status(200).json({ status: true, message: "Working hours updated successfully." });
+        return res.status(200).json({ 
+            status: true, 
+            message: "Working hours updated successfully." 
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
@@ -222,7 +228,10 @@ export const deleteWorkingHours: RequestHandler = async (req, res) => {
         await workingHoursRepository.delete(workingHour.id);
 
 
-        res.status(200).json({ status: true, message: `Working hours for day: ${day} for ${clinic.id} deleted succesfully.` });
+        return res.status(200).json({ 
+            status: true, 
+            message: `Working hours for day: ${day} for ${clinic.id} deleted succesfully.` 
+        });
     } catch (error: unknown) {
         if (error instanceof Error) {
             res.status(400).send({
@@ -250,7 +259,7 @@ export const addSupplies: RequestHandler = async (req, res) => {
             .save(new Supply(dto.name, dto.description, dto.stockQuantity, dto.minimunRequired, clinic))
 
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Supply for clinic ${clinic.id} added succesfully.`
         });
@@ -280,7 +289,7 @@ export const getSuppliesByClinicId: RequestHandler = async (req, res) => {
         });
 
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: supplies
         });
@@ -314,7 +323,7 @@ export const updateSupply: RequestHandler = async (req, res) => {
 
         await supplyRepository.save(supplyToUpdate);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Supply ${supplyId} updated succesfully.`
         });
@@ -349,7 +358,7 @@ export const addTreatments: RequestHandler = async (req, res) => {
             .save(new Treatment(dto.name, dto.description, dto.price, clinic))
 
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Treatment for clinic ${clinic.id} added succesfully.`
         });
@@ -379,7 +388,7 @@ export const getTreatmentsByClinicId: RequestHandler = async (req, res) => {
         });
 
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: treatments
         });
@@ -406,7 +415,7 @@ export const deleteTreatment: RequestHandler = async (req, res) => {
 
         await treatmentRepository.delete((await treatmentToDelete).id)
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Treatment ${treatmentId} deleted succesfully.`
         });
@@ -441,7 +450,7 @@ export const updateTreatment: RequestHandler = async (req, res) => {
 
         await treatmentRepository.save(treatmentToUpdate);
 
-        res.status(200).json({
+        return res.status(200).json({
             success: true,
             message: `Treatment ${treatmentId} updated succesfully.`
         });
