@@ -23,11 +23,11 @@ setUpMiddleware(app);
 Application.main();
 
 app.use('/api/user', userRoute)
-app.use('/api/owners', ownersRoute)
-app.use('/api/veterinarians', vetsRoute)
+app.use('/api/owner', ownersRoute)
+app.use('/api/veterinarian', vetsRoute)
 app.use('/api/otp', otpRoute)
 app.use('/api/clinic', vetClinicRoute)
-app.use('/api/pet', petRoute)
+app.use('/api/owner/pet', petRoute)
 app.use('/api/visit', visitRoute)
 app.use('/api/invoice', invoiceRoute)
 app.use('/api/auth', authRoute)
