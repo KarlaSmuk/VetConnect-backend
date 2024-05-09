@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { addSupplies, addTreatments, addWorkingHours, createVetClinic, deleteTreatment, deleteWorkingHours, getAllVetClinics, getClinicById, getSuppliesByClinicId, getTreatmentsByClinicId, updateSupply, updateTreatment, updateWorkingHours } from "../controllers/clinic.controller";
+import { addSupplies, addTreatments, createVetClinic, deleteTreatment, deleteWorkingHours, getAllVetClinics, getClinicById, getSuppliesByClinicId, getTreatmentsByClinicId, updateSupply, updateTreatment, updateWorkingHours } from "../controllers/clinic.controller";
 import { CreateClinicDto } from "../model/requests/createClinic.dto";
 import { CreateUpdateWorkingHourDTO } from "../model/requests/createUpdateWorkingHours.dto";
 import { validateRequest } from "../middleware/validateRequest";
@@ -12,7 +12,6 @@ router.post("/", validateRequest(CreateClinicDto), createVetClinic);
 router.get("/", getAllVetClinics);
 router.get("/:clinicId", getClinicById);
 
-router.post("/hours/:clinicId", validateRequest(CreateUpdateWorkingHourDTO), addWorkingHours);
 router.put("/hours/:clinicId", validateRequest(CreateUpdateWorkingHourDTO), updateWorkingHours);
 router.delete("/hours", deleteWorkingHours);
 

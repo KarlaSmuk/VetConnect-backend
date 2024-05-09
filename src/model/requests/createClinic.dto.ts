@@ -1,5 +1,21 @@
-import { IsEmail, IsNotEmpty, IsOptional, IsString } from 'class-validator';
+import { Type } from 'class-transformer';
+import { IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
 
+class WorkingHourDTO {
+    
+    @IsNumber()
+    day: number;
+
+    @IsString()
+    openingTime: Date;
+
+    @IsString()
+    closingTime: Date;
+
+    @IsString()
+    @IsOptional()
+    specialNotes?: string;
+}
 export class CreateClinicDto {
     
     @IsString()
@@ -29,4 +45,9 @@ export class CreateClinicDto {
     @IsOptional()
     @IsString()
     webAddress: string;
+
+    @IsArray()
+    @ValidateNested({ each: true })
+    @Type(() => WorkingHourDTO)
+    workingHours: WorkingHourDTO[];
 }

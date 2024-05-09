@@ -26,6 +26,20 @@ export const createVetClinic: RequestHandler = async (req, res) => {
         const createdClinic = await clinicRepository
             .save(new VeterinaryClinic(dto.oib, dto.name, dto.address, dto.county, dto.phoneNumber, dto.email, dto.webAddress))
 
+
+        for (const wh of dto.workingHours) {
+    
+            const newWorkingHour = workingHoursRepository.create({
+                clinic: createdClinic,
+                dayOfWeek: wh.day,
+                openingTime: wh.openingTime,
+                closingTime: wh.closingTime,
+                specialNotes: wh.specialNotes
+            });
+            
+            await workingHoursRepository.save(newWorkingHour);
+        }
+
         return res.status(200).json({
             success: true,
             message: createdClinic
@@ -46,7 +60,7 @@ export const getAllVetClinics: RequestHandler = async (req, res) => {
 
         const clinics = await clinicRepository
             .createQueryBuilder('clinic')
-            .innerJoinAndSelect('clinic.workingHours', 'workingHours')
+            .leftJoinAndSelect('clinic.workingHours', 'workingHours')
             .getMany()
 
         return res.status(200).json({
@@ -96,61 +110,6 @@ export const getClinicById: RequestHandler = async (req, res) => {
 };
 
 //working hours
-
-export const addWorkingHours: RequestHandler = async (req, res) => {
-
-    const { clinicId } = req.params;
-    const dto: CreateUpdateWorkingHourDTO = req.body;
-
-    try {
-
-        const clinic = await clinicRepository.findOneBy({
-            id: clinicId
-        });
-
-        if (!clinic) {
-            throw new NotFoundError("Clinic not found.")
-        }
-
-        for (const wh of dto.workingHours) {
-
-            const existingWorkingHour = await workingHoursRepository.findOne({
-                where: {
-                    clinic: { id: clinicId },
-                    dayOfWeek: wh.day
-                }
-            });
-
-            if (existingWorkingHour) {
-                return res.status(400).json({ message: `Working hours for day ${wh.day} already exist.` });
-            }
-
-            const newWorkingHour = workingHoursRepository.create({
-                clinic: clinic,
-                dayOfWeek: wh.day,
-                openingTime: wh.openingTime,
-                closingTime: wh.closingTime,
-                specialNotes: wh.specialNotes
-            });
-
-            await workingHoursRepository.save(newWorkingHour);
-        }
-
-
-
-        return res.status(200).json({ 
-            status: true, 
-            message: "Working hours added successfully." 
-        });
-    } catch (error: unknown) {
-        if (error instanceof Error) {
-            res.status(400).send({
-                success: false,
-                message: error.message
-            });
-        }
-    }
-};
 
 
 export const updateWorkingHours: RequestHandler = async (req, res) => {
