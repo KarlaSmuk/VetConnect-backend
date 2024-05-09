@@ -9,7 +9,11 @@ export const getOwners: RequestHandler = async (req, res) => {
 
     try {
 
-        const owners = await ownerRepository.find()
+        const owners = await ownerRepository
+            .createQueryBuilder('owner')
+            .leftJoinAndSelect('owner.user', 'user')
+            .select(['owner', 'user.email'])
+            .getMany()
 
         return res.status(201).json({
             success: true,
