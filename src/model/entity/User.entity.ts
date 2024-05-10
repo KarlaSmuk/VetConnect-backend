@@ -11,6 +11,22 @@ export class User {
     @Column({ unique: true })
     email: string
 
+    @Column()
+    firstName: string
+
+    @Column()
+    lastName: string
+
+    @Column()
+    phoneNumber: string
+
+    //leave like that for now
+    @Column({
+        type: 'bytea',
+        nullable: true
+    })
+    photo?: string
+
     @Column({
         nullable: true
     })
@@ -36,7 +52,10 @@ export class User {
     @OneToMany(() => OtpData, (otp) => otp.user)
     otp: OtpData[];
 
-    constructor(email: string, role: UserRole, password?: string) {
+    constructor(email: string, firstName: string, lastName: string, phoneNumber: string, role: UserRole, password?: string) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.phoneNumber = phoneNumber;
         this.email = email;
         this.role = role;
         this.password = password;

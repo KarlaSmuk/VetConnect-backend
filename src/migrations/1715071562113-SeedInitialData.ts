@@ -13,15 +13,15 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
 
         // Insert Admin, Owner, and Vet users with unique constraint handling
         await queryRunner.query(
-            `INSERT INTO "user" ("email", "password", "role")
-             VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING`,
-            ['admin@admin.com', adminPassword, UserRole.ADMIN]
+            `INSERT INTO "user" ("email", "firstName", "lastName", "phoneNumber", "password", "role")
+             VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO NOTHING`,
+            ['admin@admin.com', 'admin', 'admin', '000000000', adminPassword, UserRole.ADMIN]
         );
         
         await queryRunner.query(
-            `INSERT INTO "user" ("email", "password", "role")
-             VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING`,
-            ['owner@owner.com', ownerPassword, UserRole.OWNER]
+            `INSERT INTO "user" ("email", "firstName", "lastName", "phoneNumber", "password", "role")
+             VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO NOTHING`,
+            ['owner@owner.com', 'John', 'Doe', '1234567890', ownerPassword, UserRole.OWNER]
         );
 
         const userId = (await queryRunner.query(
@@ -30,9 +30,9 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         ))[0].id;
 
         await queryRunner.query(
-            `INSERT INTO "owner" ("firstName", "lastName", "phoneNumber", "userId")
-             VALUES ($1, $2, $3, $4)`,
-            ['John', 'Doe', '1234567890', userId]
+            `INSERT INTO "owner" ("userId")
+             VALUES ($1)`,
+            [ userId]
         );
 
         const ownerId = (await queryRunner.query(
@@ -83,9 +83,9 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
 
         // Insert Vet user and Veterinarian
         await queryRunner.query(
-            `INSERT INTO "user" ("email", "password", "role")
-             VALUES ($1, $2, $3) ON CONFLICT (email) DO NOTHING`,
-            ['vet@vet.com', vetPassword, UserRole.VET]
+            `INSERT INTO "user" ("email", "firstName", "lastName", "phoneNumber", "password", "role")
+             VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO NOTHING`,
+            ['vet@vet.com', 'Ivan', 'Horvat', '+385 91 234 5678', vetPassword, UserRole.VET]
         );
 
         const vetUserId = (await queryRunner.query(
@@ -94,9 +94,9 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         ))[0].id;
 
         await queryRunner.query(
-            `INSERT INTO "veterinarian" ("firstName", "lastName", "phoneNumber", "userId", "clinicId")
-             VALUES ($1, $2, $3, $4, $5)`,
-            ['Ivan', 'Horvat', '+385 91 234 5678', vetUserId, clinicId]
+            `INSERT INTO "veterinarian" ("userId", "clinicId")
+             VALUES ($1, $2)`,
+            [vetUserId, clinicId]
         );
     }
 

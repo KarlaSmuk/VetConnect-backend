@@ -8,22 +8,6 @@ export class Owner {
     @PrimaryGeneratedColumn("uuid")
     id: string
 
-    @Column()
-    firstName: string
-
-    @Column()
-    lastName: string
-
-    @Column()
-    phoneNumber: string
-
-    //leave like that for now
-    @Column({
-        type: 'bytea',
-        nullable: true
-    })
-    photo?: Buffer
-
     //relationships
 
     @OneToOne(() => User)
@@ -34,10 +18,7 @@ export class Owner {
     pets: Pet[];
 
 
-    constructor(firstName: string, lastName: string, phoneNumber: string, user: User) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.phoneNumber = phoneNumber;
+    constructor(user: User) {
         this.user = user;
     }
 

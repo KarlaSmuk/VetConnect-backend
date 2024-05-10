@@ -24,11 +24,11 @@ export const createOwnerUser: RequestHandler = async (req, res) => {
         }
 
         const createdUser = await userRepository
-            .save(new User(dto.email, dto.role))
+            .save(new User(dto.email, dto.firstName, dto.lastName, dto.phoneNumber, dto.role))
 
 
         const createdOwner = await ownerRepository
-            .save(new Owner(dto.firstName, dto.lastName, dto.phoneNumber, createdUser))
+            .save(new Owner(createdUser))
 
 
         return res.status(200).json({
@@ -63,10 +63,10 @@ export const createVetUser: RequestHandler = async (req, res) => {
             })
 
         const createdUser = await userRepository
-            .save(new User(dto.email, dto.role))
+            .save(new User(dto.email, dto.firstName, dto.lastName, dto.phoneNumber, dto.role))
 
         const createdVet = await vetRepository
-            .save(new Veterinarian(dto.firstName, dto.lastName, dto.phoneNumber, createdUser, clinic))
+            .save(new Veterinarian(createdUser, clinic))
 
         return res.status(200).json({
             success: true,
