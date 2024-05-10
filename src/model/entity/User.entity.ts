@@ -25,6 +25,12 @@ export class User {
     })
     role: UserRole
 
+    @Column({default: false})
+    isDeleted: boolean
+
+    @Column({type: 'timestamptz', default: null})
+    deletedAt: Date
+
     //relationships
 
     @OneToMany(() => OtpData, (otp) => otp.user)
