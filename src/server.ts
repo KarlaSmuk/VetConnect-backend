@@ -12,12 +12,14 @@ import invoiceRoute from './routes/invoice.router';
 import ownersRoute from './routes/owner.router';
 import vetsRoute from './routes/vet.router';
 import authRoute from './routes/auth.router';
+import cors from 'cors';
 
 dotenv.config();
 
 const app: Express = express();
 const PORT = process.env.PORT
 
+app.use(cors())
 setUpMiddleware(app);
 
 Application.main();
