@@ -27,12 +27,8 @@ export class Pet {
     @Column()
     color: string
 
-    //leave like that for now
-    @Column({
-        type: 'bytea',
-        nullable: true
-    })
-    photo: Buffer
+    @Column({nullable: true})
+    photo?: string
 
     //if pet dies dont show it but dont delete it
 

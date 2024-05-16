@@ -20,11 +20,7 @@ export class User {
     @Column()
     phoneNumber: string
 
-    //leave like that for now
-    @Column({
-        type: 'bytea',
-        nullable: true
-    })
+    @Column({nullable: true})
     photo?: string
 
     @Column({
