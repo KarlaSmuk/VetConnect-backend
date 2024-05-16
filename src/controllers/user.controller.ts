@@ -7,6 +7,8 @@ import { Owner } from '../model/entity/Owner.entity';
 import { Veterinarian } from '../model/entity/Veterinarian.entity';
 import { VeterinaryClinic } from '../model/entity/VeterinaryClinic.entity';
 import { BadRequestError } from '../middleware/errorHandling';
+import { authenticateGoogle } from '../middleware/authenticateGoogle ';
+import { uploadToGoogleDrive } from '../middleware/uploadToGoogleDrive';
 
 const userRepository = AppDataSource.getRepository(User)
 const ownerRepository = AppDataSource.getRepository(Owner)
@@ -120,6 +122,44 @@ export const getUser: RequestHandler = async (req, res) => {
         res.status(201).json({
             success: true,
             message: user
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
+
+export const saveProfilePhoto: RequestHandler = async (req, res) => {
+
+    const { userId } = req.params;
+ 
+    if (!userId.toString()) {
+        return res.status(400).send("ID required.");
+    }
+
+    if (!req.file) {
+        return res.status(400).send("No file uploaded.");
+    }
+
+    try {
+            
+        const auth = authenticateGoogle();
+        if (!auth) {
+            return res.status(500).send("Authentication failed.");
+        }
+        const response = await uploadToGoogleDrive(req.file, userId.toString(), auth); 
+  
+        return res.status(400).send({
+            success: true,
+            message: response
         });
 
     } catch (error: unknown) {
