@@ -183,10 +183,21 @@ export const updateUser: RequestHandler = async (req, res) => {
 
         await userRepository.save(user);
 
+        let userResponse;
+        if(user.role == UserRole.OWNER){
+            userResponse = await ownerRepository
+                .createQueryBuilder('owner')
+                .leftJoinAndSelect('owner.user', 'user')
+                .select(['owner', 'user'])
+                .where('user.id = :id', {id: user.id})
+                .getOneOrFail()
+        }else{//TODO for vet user
+
+        }
+
         return res.status(200).json({
             success: true,
-            message: 'User updated successfully',
-            user
+            message: userResponse
         });
     } catch (error: unknown) {
         if (error instanceof Error) {

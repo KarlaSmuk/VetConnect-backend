@@ -21,8 +21,14 @@ export const getVetsByClinicId: RequestHandler = async (req, res) => {
         const clinic = await clinicRepository
             .findOneByOrFail({ id: clinicId })
 
-        const vets = await vetRepository
-            .findBy({ clinic: clinic })
+        const vets = await vetRepository.find({
+            where: {
+                clinic: { id: clinicId }
+            },
+            relations: {
+                user: true
+            }
+        });
 
         return res.status(201).json({
             success: true,
