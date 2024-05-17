@@ -9,6 +9,7 @@ import { VeterinaryClinic } from '../model/entity/VeterinaryClinic.entity';
 import { BadRequestError } from '../middleware/errorHandling';
 import { authenticateGoogle } from '../middleware/authenticateGoogle ';
 import { uploadToGoogleDrive } from '../middleware/uploadToGoogleDrive';
+import { google } from 'googleapis';
 
 const userRepository = AppDataSource.getRepository(User)
 const ownerRepository = AppDataSource.getRepository(Owner)
@@ -150,12 +151,31 @@ export const saveProfilePhoto: RequestHandler = async (req, res) => {
     }
 
     try {
+
+        const user = await userRepository
+            .findOneByOrFail({
+                id: userId
+            })
+
+        
             
         const auth = authenticateGoogle();
         if (!auth) {
             return res.status(500).send("Authentication failed.");
         }
-        const response = await uploadToGoogleDrive(req.file, userId.toString(), auth); 
+
+        if(user.photo){ // if already exist first delete it
+            const driveService = google.drive({ version: "v3", auth });
+            await driveService.files.delete({
+                fileId: user.photo
+              });
+        }
+
+        const response = await uploadToGoogleDrive(req.file, userId.toString(), auth);
+
+        user.photo = response.id?.toString();
+
+        await userRepository.save(user);
   
         return res.status(400).send({
             success: true,

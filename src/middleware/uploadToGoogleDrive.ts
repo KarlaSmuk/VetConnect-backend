@@ -29,5 +29,6 @@ export const uploadToGoogleDrive = async (file: any, id: string, auth: any) => {
       media: media,
       fields: "id"
     });
-    return response;
+    
+    return response.data;
   };
