@@ -7,10 +7,10 @@ class WorkingHourDTO {
     day: number;
 
     @IsString()
-    openingTime: Date;
+    openingTime: string;
 
     @IsString()
-    closingTime: Date;
+    closingTime: string;
 
     @IsString()
     @IsOptional()

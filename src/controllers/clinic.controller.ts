@@ -46,6 +46,37 @@ export const createVetClinic: RequestHandler = async (req, res) => {
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
+            console.log('neš neće')
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+};
+
+export const deleteClinic: RequestHandler = async (req, res) => {
+
+    const { clinicId } = req.params;
+
+    try {
+
+        const clinic = await clinicRepository
+            .findOneByOrFail({
+                id: clinicId
+            })
+
+        clinic.isDeleted = true;
+        clinic.deletedAt = new Date();
+
+        await clinicRepository.save(clinic)
+
+        return res.status(200).json({
+            success: true,
+            message: 'Clinic deleted succesffuly.'
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
             res.status(400).send({
                 success: false,
                 message: error.message
@@ -61,6 +92,7 @@ export const getAllVetClinics: RequestHandler = async (req, res) => {
         const clinics = await clinicRepository
             .createQueryBuilder('clinic')
             .leftJoinAndSelect('clinic.workingHours', 'workingHours')
+            .where('clinic.isDeleted = :deleted', {deleted: false})
             .getMany()
 
         return res.status(200).json({
@@ -90,6 +122,7 @@ export const getClinicById: RequestHandler = async (req, res) => {
             .createQueryBuilder('clinic')
             .innerJoinAndSelect('clinics.workingHours', 'workingHours')
             .where('clinic.id = :clinicId', {clinicId: clinicId})
+            .where('clinic.isDeleted = :deleted', {deleted: false})
             .getOneOrFail()
 
         return res.status(201).json({

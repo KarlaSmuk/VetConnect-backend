@@ -82,7 +82,7 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         ))[0].id;
 
         const workingHoursData = [
-            { day: 1, openingTime: '8:00', closingTime: '18:00', specialNotes: '' },
+            { day: 1, openingTime: '08:00', closingTime: '18:00', specialNotes: '' },
             { day: 2, openingTime: '10:00', closingTime: '16:00', specialNotes: '' },
             { day: 3, openingTime: '08:00', closingTime: '18:00', specialNotes: '' },
             { day: 4, openingTime: '08:00', closingTime: '20:00', specialNotes: '' },

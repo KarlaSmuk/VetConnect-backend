@@ -10,11 +10,11 @@ export class WorkingHours {
     @Column()
     dayOfWeek: number
 
-    @Column({type: 'time'})
-    openingTime: Date
+    @Column()
+    openingTime: string
 
-    @Column({type: 'time'})
-    closingTime: Date
+    @Column()
+    closingTime: string
 
     @Column({ nullable: true })
     specialNotes?: string //županija

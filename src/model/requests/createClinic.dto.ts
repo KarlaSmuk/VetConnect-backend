@@ -1,5 +1,6 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { IsArray, IsEmail, IsNotEmpty, IsNumber, IsOptional, IsString, ValidateNested } from 'class-validator';
+import { Timestamp } from 'typeorm';
 
 class WorkingHourDTO {
     
@@ -7,10 +8,10 @@ class WorkingHourDTO {
     day: number;
 
     @IsString()
-    openingTime: Date;
+    openingTime: string;
 
     @IsString()
-    closingTime: Date;
+    closingTime: string;
 
     @IsString()
     @IsOptional()
@@ -44,7 +45,7 @@ export class CreateClinicDto {
 
     @IsOptional()
     @IsString()
-    webAddress: string;
+    webAddress?: string;
 
     @IsArray()
     @ValidateNested({ each: true })
