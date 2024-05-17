@@ -3,6 +3,7 @@ import { createOwnerUser, createVetUser, deleteUser, getAllUsers, getUser, saveP
 import { validateRequest } from "../middleware/validateRequest";
 import { CreateUserDto } from "../model/requests/createUser.dto";
 import { multer } from "../middleware/multer";
+import { UpdateUserDto } from "../model/requests/updateUser.dto";
 
 const router = Router();
 
@@ -10,7 +11,7 @@ router.post("/", validateRequest(CreateUserDto), createOwnerUser);
 router.post("/:clinicId", validateRequest(CreateUserDto), createVetUser);
 router.get("/", getAllUsers);
 router.get("/:id", getUser);
-router.put("/update", updateUser)
+router.put("/update", validateRequest(UpdateUserDto), updateUser)
 router.delete("/delete/:userId", deleteUser)
 router.post("/saveProfileImage/:userId", multer.single("file"), saveProfilePhoto)
 

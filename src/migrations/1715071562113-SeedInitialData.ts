@@ -81,6 +81,23 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
             ['12345678901']
         ))[0].id;
 
+        const workingHoursData = [
+            { day: 1, openingTime: '8:00', closingTime: '18:00', specialNotes: '' },
+            { day: 2, openingTime: '10:00', closingTime: '16:00', specialNotes: '' },
+            { day: 3, openingTime: '08:00', closingTime: '18:00', specialNotes: '' },
+            { day: 4, openingTime: '08:00', closingTime: '20:00', specialNotes: '' },
+            { day: 5, openingTime: '08:00', closingTime: '18:00', specialNotes: '' },
+            { day: 6, openingTime: '09:00', closingTime: '12:00', specialNotes: 'Hitni slučajevi' }
+        ];
+
+        for (const wh of workingHoursData) {
+            await queryRunner.query(
+                `INSERT INTO "working_hours" ("clinicId", "dayOfWeek", "openingTime", "closingTime", "specialNotes")
+                 VALUES ($1, $2, $3, $4, $5)`,
+                [clinicId, wh.day, wh.openingTime, wh.closingTime, wh.specialNotes]
+            );
+        }
+
         // Insert Vet user and Veterinarian
         await queryRunner.query(
             `INSERT INTO "user" ("email", "firstName", "lastName", "phoneNumber", "password", "role")
