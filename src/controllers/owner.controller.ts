@@ -12,7 +12,8 @@ export const getOwners: RequestHandler = async (req, res) => {
         const owners = await ownerRepository
             .createQueryBuilder('owner')
             .leftJoinAndSelect('owner.user', 'user')
-            .select(['owner', 'user.email'])
+            .select(['owner', 'user'])
+            .where('user.isDeleted = :deleted', {deleted: false})
             .getMany()
 
         return res.status(201).json({

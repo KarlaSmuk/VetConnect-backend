@@ -10,6 +10,7 @@ import { BadRequestError } from '../middleware/errorHandling';
 import { authenticateGoogle } from '../middleware/authenticateGoogle ';
 import { uploadToGoogleDrive } from '../middleware/uploadToGoogleDrive';
 import { google } from 'googleapis';
+import { UpdateUserDto } from 'model/requests/updateUser.dto';
 
 const userRepository = AppDataSource.getRepository(User)
 const ownerRepository = AppDataSource.getRepository(Owner)
@@ -85,12 +86,18 @@ export const createVetUser: RequestHandler = async (req, res) => {
     }
 };
 
+
+
 export const getAllUsers: RequestHandler = async (req, res) => {
 
     try {
 
         const users = await userRepository
-            .find()
+            .find({
+                where: {
+                    isDeleted: false
+                }
+            });
 
         return res.status(200).json({
             success: true,
@@ -120,7 +127,14 @@ export const getUser: RequestHandler = async (req, res) => {
                 id: id
             })
 
-        res.status(201).json({
+        if (user.isDeleted) {
+            return res.status(400).json({
+                success: false,
+                message: 'User does not exist.'
+            });
+        }
+
+        return res.status(201).json({
             success: true,
             message: user
         });
@@ -137,11 +151,88 @@ export const getUser: RequestHandler = async (req, res) => {
 
 };
 
+export const updateUser: RequestHandler = async (req, res) => {
+
+    const userToUpdate: UpdateUserDto = req.body;
+
+    try {
+
+        const user = await userRepository
+            .findOneByOrFail({
+                id: userToUpdate.id
+            })
+
+        if (userToUpdate.email && userToUpdate.email != user.email) {
+            const emailExists = await userRepository.findOneBy({
+                email: userToUpdate.email
+            });
+
+            if (emailExists) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Email already in use.'
+                });
+            }
+        }
+
+
+        user.firstName = userToUpdate.firstName || user.firstName;
+        user.lastName = userToUpdate.lastName || user.lastName;
+        user.email = userToUpdate.email || user.email;
+        user.phoneNumber = userToUpdate.phoneNumber || user.phoneNumber;
+
+        await userRepository.save(user);
+
+        return res.status(200).json({
+            success: true,
+            message: 'User updated successfully',
+            user
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+};
+
+
+export const deleteUser: RequestHandler = async (req, res) => {
+
+    const { userId } = req.params;
+
+    try {
+
+        const user = await userRepository
+            .findOneByOrFail({
+                id: userId
+            })
+
+        user.isDeleted = true;
+        user.deletedAt = new Date();
+
+        await userRepository.save(user)
+
+        return res.status(200).json({
+            success: true,
+            message: 'User deleted succesffuly.'
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+};
 
 export const saveProfilePhoto: RequestHandler = async (req, res) => {
 
     const { userId } = req.params;
- 
+
     if (!userId.toString()) {
         return res.status(400).send("ID required.");
     }
@@ -157,18 +248,18 @@ export const saveProfilePhoto: RequestHandler = async (req, res) => {
                 id: userId
             })
 
-        
-            
+
+
         const auth = authenticateGoogle();
         if (!auth) {
             return res.status(500).send("Authentication failed.");
         }
 
-        if(user.photo){ // if already exist first delete it
+        if (user.photo) { // if already exist first delete it
             const driveService = google.drive({ version: "v3", auth });
             await driveService.files.delete({
                 fileId: user.photo
-              });
+            });
         }
 
         const response = await uploadToGoogleDrive(req.file, userId.toString(), auth);
@@ -176,7 +267,7 @@ export const saveProfilePhoto: RequestHandler = async (req, res) => {
         user.photo = response.id?.toString();
 
         await userRepository.save(user);
-  
+
         return res.status(400).send({
             success: true,
             message: response
