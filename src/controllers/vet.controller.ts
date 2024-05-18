@@ -17,7 +17,8 @@ export const getVetsByClinicId: RequestHandler = async (req, res) => {
 
         const vets = await vetRepository.find({
             where: {
-                clinic: { id: clinicId }
+                clinic: { id: clinicId },
+                user: { isDeleted: false}
             },
             relations: {
                 user: true
