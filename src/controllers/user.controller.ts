@@ -192,7 +192,12 @@ export const updateUser: RequestHandler = async (req, res) => {
                 .where('user.id = :id', {id: user.id})
                 .getOneOrFail()
         }else{//TODO for vet user
-
+            userResponse = await vetRepository
+                .createQueryBuilder('vet')
+                .leftJoinAndSelect('vet.user', 'user')
+                .select(['vet', 'user'])
+                .where('user.id = :id', {id: user.id})
+                .getOneOrFail()
         }
 
         return res.status(200).json({

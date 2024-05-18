@@ -4,12 +4,13 @@ import { AppDataSource } from "../config/db";
 import { CreateClinicDto } from '../model/requests/createClinic.dto';
 import { VeterinaryClinic } from '../model/entity/VeterinaryClinic.entity';
 import { WorkingHours } from '../model/entity/WorkingHours.entity';
-import { CreateUpdateWorkingHourDTO } from '../model/requests/createUpdateWorkingHours.dto';
+import { UpdateWorkingHourDTO } from '../model/requests/updateWorkingHours.dto';
 import { NotFoundError } from '../middleware/errorHandling';
 import { CreateSupplyDto } from '../model/requests/createSupply.dto';
 import { Supply } from '../model/entity/Supply.entity';
 import { CreateTreatmentDto } from '../model/requests/createTreatment.dto';
 import { Treatment } from '../model/entity/Treatment.entity';
+import { UpdateClinicInfoDto } from 'model/requests/updateClinicInfo.dto';
 
 
 const clinicRepository = AppDataSource.getRepository(VeterinaryClinic);
@@ -46,7 +47,6 @@ export const createVetClinic: RequestHandler = async (req, res) => {
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
-            console.log('neš neće')
             res.status(400).send({
                 success: false,
                 message: error.message
@@ -54,6 +54,46 @@ export const createVetClinic: RequestHandler = async (req, res) => {
         }
     }
 };
+
+export const updateClinicInfo: RequestHandler = async (req, res) => {
+
+    const dto: UpdateClinicInfoDto = req.body;
+
+    try {
+
+        const existingClinic = await clinicRepository
+            .findOneByOrFail({id: dto.id})
+
+        existingClinic.oib = dto.oib || existingClinic.oib;
+        existingClinic.name = dto.name || existingClinic.name;
+        existingClinic.address = dto.address || existingClinic.address;
+        existingClinic.county = dto.county || existingClinic.county;
+        existingClinic.phoneNumber = dto.phoneNumber || existingClinic.phoneNumber;
+        existingClinic.email = dto.email || existingClinic.email;
+        existingClinic.webAddress = dto.webAddress || existingClinic.webAddress;
+
+        await clinicRepository.save(existingClinic)
+
+        const updatedClinic = await clinicRepository
+            .createQueryBuilder('clinic')
+            .innerJoinAndSelect('clinic.workingHours', 'workingHours')
+            .where('clinic.id = :clinicId', {clinicId: dto.id})
+            .getOneOrFail()
+
+        return res.status(200).json({
+            success: true,
+            message: updatedClinic
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+};
+
 
 export const deleteClinic: RequestHandler = async (req, res) => {
 
@@ -120,7 +160,7 @@ export const getClinicById: RequestHandler = async (req, res) => {
 
         const clinic = await clinicRepository
             .createQueryBuilder('clinic')
-            .innerJoinAndSelect('clinics.workingHours', 'workingHours')
+            .innerJoinAndSelect('clinic.workingHours', 'workingHours')
             .where('clinic.id = :clinicId', {clinicId: clinicId})
             .where('clinic.isDeleted = :deleted', {deleted: false})
             .getOneOrFail()
@@ -144,15 +184,13 @@ export const getClinicById: RequestHandler = async (req, res) => {
 
 //working hours
 
-
 export const updateWorkingHours: RequestHandler = async (req, res) => {
 
-    const { clinicId } = req.params;
-    const dto: CreateUpdateWorkingHourDTO = req.body;
+    const dto: UpdateWorkingHourDTO = req.body;
 
     try {
 
-        const clinic = await clinicRepository.findOneBy({ id: clinicId });
+        const clinic = await clinicRepository.findOneBy({ id: dto.clinicId });
         if (!clinic) {
             throw new NotFoundError("Clinic not found.")
         }
@@ -161,7 +199,7 @@ export const updateWorkingHours: RequestHandler = async (req, res) => {
 
             const existingWorkingHour = await workingHoursRepository.findOne({
                 where: {
-                    clinic: { id: clinicId },
+                    clinic: { id: dto.clinicId },
                     dayOfWeek: wh.day
                 }
             });
@@ -171,17 +209,22 @@ export const updateWorkingHours: RequestHandler = async (req, res) => {
             }
 
             //update existing
-            existingWorkingHour.openingTime = wh.openingTime;
-            existingWorkingHour.closingTime = wh.closingTime;
-            existingWorkingHour.specialNotes = wh.specialNotes;
+            existingWorkingHour.openingTime = wh.openingTime || existingWorkingHour.openingTime;
+            existingWorkingHour.closingTime = wh.closingTime || existingWorkingHour.closingTime;
+            existingWorkingHour.specialNotes = wh.specialNotes || existingWorkingHour.specialNotes;
+
             await workingHoursRepository.save(existingWorkingHour);
         }
 
-
+        const updatedClinic = await clinicRepository
+            .createQueryBuilder('clinic')
+            .innerJoinAndSelect('clinic.workingHours', 'workingHours')
+            .where('clinic.id = :clinicId', {clinicId: dto.clinicId})
+            .getOneOrFail()
 
         return res.status(200).json({ 
             status: true, 
-            message: "Working hours updated successfully." 
+            message: updatedClinic
         });
     } catch (error: unknown) {
         if (error instanceof Error) {

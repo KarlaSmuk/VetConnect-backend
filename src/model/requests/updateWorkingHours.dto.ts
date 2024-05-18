@@ -1,4 +1,4 @@
-import { IsArray, ValidateNested, IsNumber, IsString, IsOptional } from 'class-validator';
+import { IsArray, ValidateNested, IsNumber, IsString, IsOptional, IsNotEmpty } from 'class-validator';
 import { Type } from 'class-transformer';
 
 class WorkingHourDTO {
@@ -7,17 +7,22 @@ class WorkingHourDTO {
     day: number;
 
     @IsString()
-    openingTime: string;
+    openingTime?: string;
 
     @IsString()
-    closingTime: string;
+    closingTime?: string;
 
     @IsString()
     @IsOptional()
     specialNotes?: string;
 }
 
-export class CreateUpdateWorkingHourDTO {
+export class UpdateWorkingHourDTO {
+    
+    @IsString()
+    @IsNotEmpty()
+    clinicId: string;
+    
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => WorkingHourDTO)

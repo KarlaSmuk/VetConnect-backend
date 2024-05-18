@@ -2,10 +2,7 @@ import { RequestHandler } from "express";
 import { AppDataSource } from "../config/db";
 import { Veterinarian } from "../model/entity/Veterinarian.entity";
 import { BadRequestError } from "../middleware/errorHandling";
-import { VeterinaryClinic } from "../model/entity/VeterinaryClinic.entity";
 
-
-const clinicRepository = AppDataSource.getRepository(VeterinaryClinic)
 const vetRepository = AppDataSource.getRepository(Veterinarian)
 
 export const getVetsByClinicId: RequestHandler = async (req, res) => {
@@ -17,9 +14,6 @@ export const getVetsByClinicId: RequestHandler = async (req, res) => {
     }
 
     try {
-
-        const clinic = await clinicRepository
-            .findOneByOrFail({ id: clinicId })
 
         const vets = await vetRepository.find({
             where: {
