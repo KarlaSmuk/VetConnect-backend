@@ -92,7 +92,7 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
 
         for (const wh of workingHoursData) {
             await queryRunner.query(
-                `INSERT INTO "working_hours" ("clinicId", "dayOfWeek", "openingTime", "closingTime", "specialNotes")
+                `INSERT INTO "working_hours" ("clinicId", "day", "openingTime", "closingTime", "specialNotes")
                  VALUES ($1, $2, $3, $4, $5)`,
                 [clinicId, wh.day, wh.openingTime, wh.closingTime, wh.specialNotes]
             );

@@ -8,7 +8,7 @@ export class WorkingHours {
     id: string
 
     @Column()
-    dayOfWeek: number
+    day: number
 
     @Column()
     openingTime: string

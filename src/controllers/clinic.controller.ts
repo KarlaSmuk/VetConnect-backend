@@ -32,7 +32,7 @@ export const createVetClinic: RequestHandler = async (req, res) => {
     
             const newWorkingHour = workingHoursRepository.create({
                 clinic: createdClinic,
-                dayOfWeek: wh.day,
+                day: wh.day,
                 openingTime: wh.openingTime,
                 closingTime: wh.closingTime,
                 specialNotes: wh.specialNotes
@@ -200,7 +200,7 @@ export const updateWorkingHours: RequestHandler = async (req, res) => {
             const existingWorkingHour = await workingHoursRepository.findOne({
                 where: {
                     clinic: { id: dto.clinicId },
-                    dayOfWeek: wh.day
+                    day: wh.day
                 }
             });
 
@@ -254,7 +254,7 @@ export const deleteWorkingHours: RequestHandler = async (req, res) => {
 
         const workingHour = await workingHoursRepository.findOneBy({
             clinic: { id: clinicId?.toString() },
-            dayOfWeek: dayNumber
+            day: dayNumber
         });
         if (!workingHour) {
             throw new NotFoundError(`Working hours for day: ${day} for ${clinic.id} not found.`)
