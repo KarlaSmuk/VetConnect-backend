@@ -87,7 +87,8 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
             { day: 3, openingTime: '08:00', closingTime: '18:00', specialNotes: '' },
             { day: 4, openingTime: '08:00', closingTime: '20:00', specialNotes: '' },
             { day: 5, openingTime: '08:00', closingTime: '18:00', specialNotes: '' },
-            { day: 6, openingTime: '09:00', closingTime: '12:00', specialNotes: 'Hitni slučajevi' }
+            { day: 6, openingTime: '09:00', closingTime: '12:00', specialNotes: 'Hitni slučajevi' },
+            { day: 7, openingTime: '', closingTime: '', specialNotes: '' }
         ];
 
         for (const wh of workingHoursData) {

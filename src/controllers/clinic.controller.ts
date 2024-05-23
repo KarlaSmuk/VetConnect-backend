@@ -133,6 +133,7 @@ export const getAllVetClinics: RequestHandler = async (req, res) => {
             .createQueryBuilder('clinic')
             .leftJoinAndSelect('clinic.workingHours', 'workingHours')
             .where('clinic.isDeleted = :deleted', {deleted: false})
+            .orderBy('workingHours.day', 'ASC')
             .getMany()
 
         return res.status(200).json({
@@ -163,6 +164,7 @@ export const getClinicById: RequestHandler = async (req, res) => {
             .innerJoinAndSelect('clinic.workingHours', 'workingHours')
             .where('clinic.id = :clinicId', {clinicId: clinicId})
             .where('clinic.isDeleted = :deleted', {deleted: false})
+            .orderBy('workingHours.day', 'ASC')
             .getOneOrFail()
 
         return res.status(201).json({
@@ -220,6 +222,7 @@ export const updateWorkingHours: RequestHandler = async (req, res) => {
             .createQueryBuilder('clinic')
             .innerJoinAndSelect('clinic.workingHours', 'workingHours')
             .where('clinic.id = :clinicId', {clinicId: dto.clinicId})
+            .orderBy('workingHours.day', 'ASC')
             .getOneOrFail()
 
         return res.status(200).json({ 

@@ -23,15 +23,11 @@ export class CreateVisitDto {
     @IsOptional()
     notes: string;
 
-    // @IsUUID(4, { each: true })
-    // @IsOptional()
-    // treatmentIds: string[];
-
     @IsArray()
     @IsOptional()
     @ValidateNested({ each: true })
     @Type(() => CreateInvoiceItemDto)
-    items: CreateInvoiceItemDto[];
+    items?: CreateInvoiceItemDto[];
 }
 
 class CreateInvoiceItemDto {
