@@ -134,9 +134,75 @@ export const getUser: RequestHandler = async (req, res) => {
             });
         }
 
+        let userToReturn;
+        if(user.role === UserRole.OWNER){
+            const owner = await ownerRepository.findOneOrFail({
+                where: {
+                    user: { id: user.id}
+                },
+                relations: {
+                    user: true
+                }
+            });
+
+            userToReturn =  {
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phoneNumber: user.phoneNumber,
+                    email: user.email,
+                    role: user.role,
+                    photo: user.photo,
+                  },
+                owner: {
+                    id: owner.id
+                }
+            }
+
+        }else if(user.role === UserRole.VET){
+            const vet = await vetRepository.findOneOrFail({
+                where: {
+                    user: { id: user.id}
+                },
+                relations: {
+                    user: true,
+                    clinic: true
+                }
+            });
+            userToReturn =  {
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phoneNumber: user.phoneNumber,
+                    email: user.email,
+                    role: user.role,
+                    photo: user.photo,
+                  },
+                vet: {
+                    id: vet.id,
+                    clinicId: vet.clinic.id
+
+                }
+            }
+        }else{//ADMIN
+            userToReturn = {
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phoneNumber: user.phoneNumber,
+                    email: user.email,
+                    role: user.role,
+                    photo: user.photo,
+                  }
+            }
+        }
+
         return res.status(201).json({
             success: true,
-            message: user
+            message: userToReturn
         });
 
     } catch (error: unknown) {
@@ -284,7 +350,7 @@ export const saveProfilePhoto: RequestHandler = async (req, res) => {
 
         await userRepository.save(user);
 
-        return res.status(400).send({
+        return res.status(200).send({
             success: true,
             message: response
         });

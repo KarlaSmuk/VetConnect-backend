@@ -41,9 +41,15 @@ export const createVetClinic: RequestHandler = async (req, res) => {
             await workingHoursRepository.save(newWorkingHour);
         }
 
+        const clinic = await clinicRepository
+            .createQueryBuilder('clinic')
+            .innerJoinAndSelect('clinic.workingHours', 'workingHours')
+            .where('clinic.id = :clinicId', {clinicId: createdClinic.id})
+            .getOneOrFail()
+
         return res.status(200).json({
             success: true,
-            message: createdClinic
+            message: clinic
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -226,7 +232,7 @@ export const updateWorkingHours: RequestHandler = async (req, res) => {
             .getOneOrFail()
 
         return res.status(200).json({ 
-            status: true, 
+            success: true, 
             message: updatedClinic
         });
     } catch (error: unknown) {
@@ -267,7 +273,7 @@ export const deleteWorkingHours: RequestHandler = async (req, res) => {
 
 
         return res.status(200).json({ 
-            status: true, 
+            success: true, 
             message: `Working hours for day: ${day} for ${clinic.id} deleted succesfully.` 
         });
     } catch (error: unknown) {

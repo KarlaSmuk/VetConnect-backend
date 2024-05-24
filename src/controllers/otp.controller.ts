@@ -30,7 +30,7 @@ export const createOtp: RequestHandler = async (req, res) => {
 
         //sending email
         const emailSent = await sendOtp(user.email, Number(otp))
-
+        //const emailSent = true;
         if (emailSent) {
             return res.status(200).json({
                 success: true,

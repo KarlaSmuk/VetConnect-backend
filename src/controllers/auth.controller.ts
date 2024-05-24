@@ -4,9 +4,16 @@ import { AppDataSource } from "../config/db";
 import { User } from "../model/entity/User.entity";
 import { OtpData } from "../model/entity/OtpData.entity";
 import { BadRequestError } from "../middleware/errorHandling";
+import { UserRole } from "../constants/roles.enum";
+import { Owner } from "../model/entity/Owner.entity";
+import { Veterinarian } from "../model/entity/Veterinarian.entity";
+import { plainToInstance } from "class-transformer";
+import { UserResponseDto } from "../model/responses/user.dto";
 
 const userRepository = AppDataSource.getRepository(User)
 const otpRepository = AppDataSource.getRepository(OtpData)
+const ownerRepository = AppDataSource.getRepository(Owner)
+const vetRepository = AppDataSource.getRepository(Veterinarian)
 
 export const verifyOtp: RequestHandler = async (req, res) => {
 
@@ -128,7 +135,7 @@ export const login: RequestHandler = async (req, res) => {
             })
         
         let isLogged;
-        if (user && user.password) {  
+        if (user && user.password && !user.isDeleted) {  
             isLogged = await compare(enteredPassword, user.password);
          } else {
             throw new BadRequestError("Authentication failed: User or password not found.");
@@ -143,9 +150,75 @@ export const login: RequestHandler = async (req, res) => {
                 });
         }
 
+        let loggedUser;
+        if(user.role === UserRole.OWNER){
+            const owner = await ownerRepository.findOneOrFail({
+                where: {
+                    user: { id: user.id}
+                },
+                relations: {
+                    user: true
+                }
+            });
+
+            loggedUser =  {
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phoneNumber: user.phoneNumber,
+                    email: user.email,
+                    role: user.role,
+                    photo: user.photo,
+                  },
+                owner: {
+                    id: owner.id
+                }
+            }
+
+        }else if(user.role === UserRole.VET){
+            const vet = await vetRepository.findOneOrFail({
+                where: {
+                    user: { id: user.id}
+                },
+                relations: {
+                    user: true,
+                    clinic: true
+                }
+            });
+            loggedUser =  {
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phoneNumber: user.phoneNumber,
+                    email: user.email,
+                    role: user.role,
+                    photo: user.photo,
+                  },
+                vet: {
+                    id: vet.id,
+                    clinicId: vet.clinic.id
+
+                }
+            }
+        }else{//ADMIN
+            loggedUser = {
+                user: {
+                    id: user.id,
+                    firstName: user.firstName,
+                    lastName: user.lastName,
+                    phoneNumber: user.phoneNumber,
+                    email: user.email,
+                    role: user.role,
+                    photo: user.photo,
+                  }
+            }
+        }
+
         return res.status(201).json({
             success: true,
-            message: "Login successful"
+            message: loggedUser
         });
 
     } catch (error: unknown) {
