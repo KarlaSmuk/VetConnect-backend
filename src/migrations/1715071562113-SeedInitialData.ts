@@ -43,30 +43,30 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         // Insert Species and Breed
         await queryRunner.query(
             `INSERT INTO "species" ("name") VALUES ($1) ON CONFLICT DO NOTHING`,
-            ['Dog']
+            ['Pas']
         );
 
         const speciesId = (await queryRunner.query(
             `SELECT id FROM "species" WHERE "name" = $1`,
-            ['Dog']
+            ['Pas']
         ))[0].id;
 
         await queryRunner.query(
             `INSERT INTO "breed" ("name", "speciesId")
              VALUES ($1, $2) ON CONFLICT DO NOTHING`,
-            ['Golden Retriever', speciesId]
+            ['Zlatni retriver', speciesId]
         );
 
         const breedId = (await queryRunner.query(
             `SELECT id FROM "breed" WHERE "name" = $1`,
-            ['Golden Retriever']
+            ['Zlatni retriver']
         ))[0].id;
 
         // Insert Pet
         await queryRunner.query(
             `INSERT INTO "pet" ("name", "dateOfBirth", "neutered", "gender", "color", "ownerId", "speciesId", "breedId")
              VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`,
-            ['Rex', '2018-01-01', false, 'Male', 'Golden', ownerId, speciesId, breedId]
+            ['Rex', '2018-01-01', false, 'Muško', 'Zlatna', ownerId, speciesId, breedId]
         );
 
         // Insert Vet Clinic
@@ -123,8 +123,8 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         await queryRunner.query("DELETE FROM user WHERE email IN ('vet@vet.com', 'owner@owner.com', 'admin@admin.com')");
         await queryRunner.query("DELETE FROM veterinary_clinic WHERE oib = '12345678901'");
         await queryRunner.query("DELETE FROM pet WHERE name = 'Rex' AND ownerId IN (SELECT id FROM owner WHERE lastName = 'Doe')");
-        await queryRunner.query("DELETE FROM breed WHERE name = 'Golden Retriever'");
-        await queryRunner.query("DELETE FROM species WHERE name = 'Dog'");
+        await queryRunner.query("DELETE FROM breed WHERE name = 'Zlatni retriver'");
+        await queryRunner.query("DELETE FROM species WHERE name = 'Pas'");
         await queryRunner.query("DELETE FROM owner WHERE lastName = 'Doe' AND userId IN (SELECT id FROM user WHERE email = 'owner@owner.com')");
     }
     

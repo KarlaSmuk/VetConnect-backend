@@ -6,7 +6,7 @@ export class CreatePetDto {
     @IsNotEmpty()
     name: string;
 
-    @IsDate()
+    @IsString()
     @IsNotEmpty()
     dateOfBirth: Date;
 

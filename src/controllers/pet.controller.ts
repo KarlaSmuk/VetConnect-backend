@@ -5,6 +5,9 @@ import { Pet } from '../model/entity/Pet.entity';
 import { Species } from '../model/entity/Species.entity';
 import { Breed } from '../model/entity/Breed.entity';
 import { Owner } from '../model/entity/Owner.entity';
+import { authenticateGoogle } from '../middleware/authenticateGoogle ';
+import { google } from 'googleapis';
+import { uploadToGoogleDrive } from '../middleware/uploadToGoogleDrive';
 
 const ownerRepository = AppDataSource.getRepository(Owner)
 const speciesRepository = AppDataSource.getRepository(Species)
@@ -25,7 +28,7 @@ export const createPet: RequestHandler = async (req, res) => {
 
         // Check if the species exists, if not create it
         let speciesEntity = await speciesRepository
-            .findOneByOrFail({
+            .findOneBy({
                 name: dto.speciesName
             });
 
@@ -36,7 +39,7 @@ export const createPet: RequestHandler = async (req, res) => {
 
         //Check if the breed exists within the species, if not create it
         let breedEntity = await breedRepository
-            .findOneByOrFail({
+            .findOneBy({
                 name: dto.breedName,
                 species: speciesEntity
             });
@@ -80,10 +83,13 @@ export const getPetsByOwnerId: RequestHandler = async (req, res) => {
                 id: ownerId?.toString()
             })
 
-        const pets = await AppDataSource
-            .getRepository(Pet)
+        const pets = await petRepository
             .createQueryBuilder("pet")
+            .leftJoinAndSelect('pet.breed', 'breed')
+            .leftJoinAndSelect('pet.species', 'species')
             .where("pet.owner = :ownerId", { ownerId: owner.id })
+            .andWhere("pet.deceasedAt IS NULL")
+            .orderBy("species.name, breed.name")
             .getMany()
 
         return res.status(200).json({
@@ -104,7 +110,44 @@ export const getPet: RequestHandler = async (req, res) => {
 
     const { petId } = req.params;
 
-    console.log('here')
+    try {
+
+        const pet = await petRepository
+            .createQueryBuilder("pet")
+            .leftJoinAndSelect('pet.breed', 'breed')
+            .leftJoinAndSelect('pet.species', 'species')
+            .where("pet.id = :petId", { petId: petId })
+            .andWhere("pet.deceasedAt IS NULL")
+            .getOneOrFail()
+
+        return res.status(200).json({
+            success: true,
+            message: pet
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
+export const savePetImage: RequestHandler = async (req, res) => {
+
+    const { petId } = req.params;
+
+    if (!petId.toString()) {
+        return res.status(400).send("ID required.");
+    }
+
+    if (!req.file) {
+        return res.status(400).send("No file uploaded.");
+    }
 
     try {
 
@@ -113,9 +156,29 @@ export const getPet: RequestHandler = async (req, res) => {
                 id: petId
             })
 
-        return res.status(200).json({
+
+
+        const auth = authenticateGoogle();
+        if (!auth) {
+            return res.status(500).send("Authentication failed.");
+        }
+
+        if (pet.photo) { // if already exist first delete it
+            const driveService = google.drive({ version: "v3", auth });
+            await driveService.files.delete({
+                fileId: pet.photo
+            });
+        }
+
+        const response = await uploadToGoogleDrive(req.file, petId.toString(), auth);
+
+        pet.photo = response.id?.toString();
+
+        await petRepository.save(pet);
+
+        return res.status(200).send({
             success: true,
-            message: pet
+            message: response
         });
 
     } catch (error: unknown) {
@@ -161,7 +224,7 @@ export const getBreedsBySpeciesId: RequestHandler = async (req, res) => {
     try {
 
         const species = await speciesRepository.findOneByOrFail({id: speciesId})
-        const breeds = await breedRepository.findOneByOrFail({species: species})
+        const breeds = await breedRepository.findBy({species: species})
 
         return res.status(200).json({
             success: true,
