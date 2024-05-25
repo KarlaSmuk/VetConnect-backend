@@ -104,6 +104,8 @@ export const getPet: RequestHandler = async (req, res) => {
 
     const { petId } = req.params;
 
+    console.log('here')
+
     try {
 
         const pet = await petRepository
@@ -114,6 +116,56 @@ export const getPet: RequestHandler = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: pet
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
+export const getSpecies: RequestHandler = async (req, res) => {
+
+    try {
+        const species = await speciesRepository.find()
+
+        return res.status(200).json({
+            success: true,
+            message: species
+        });
+
+    } catch (error: unknown) {
+        console.log(error)
+        if (error instanceof Error) {
+            console.log(error)
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
+export const getBreedsBySpeciesId: RequestHandler = async (req, res) => {
+
+    const {speciesId} = req.params;
+
+    try {
+
+        const species = await speciesRepository.findOneByOrFail({id: speciesId})
+        const breeds = await breedRepository.findOneByOrFail({species: species})
+
+        return res.status(200).json({
+            success: true,
+            message: breeds
         });
 
     } catch (error: unknown) {
