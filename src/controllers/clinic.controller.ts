@@ -299,13 +299,40 @@ export const addSupplies: RequestHandler = async (req, res) => {
             throw new NotFoundError("Clinic not found.")
         }
 
-        await supplyRepository
-            .save(new Supply(dto.name, dto.description, dto.stockQuantity, dto.minimunRequired, clinic))
-
+        const supply = await supplyRepository
+            .save(new Supply(dto.name, dto.description ? dto.description : '', dto.stockQuantity, dto.minimumRequired, clinic))
+        
+       
+        const { clinic: removedClinic, ...supplyWithoutClinic } = supply;
 
         return res.status(200).json({
             success: true,
-            message: `Supply for clinic ${clinic.id} added succesfully.`
+            message: supplyWithoutClinic
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+};
+
+export const deleteSupply: RequestHandler = async (req, res) => {
+
+    const { supplyId } = req.params;
+
+    try {
+
+        const supplyToDelete = supplyRepository
+            .findOneByOrFail({ id: supplyId })
+
+        await supplyRepository.delete((await supplyToDelete).id)
+
+        return res.status(200).json({
+            success: true,
+            message: `Supply ${supplyId} deleted succesfully.`
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -398,13 +425,14 @@ export const addTreatments: RequestHandler = async (req, res) => {
             throw new NotFoundError("Clinic not found.")
         }
 
-        await treatmentRepository
-            .save(new Treatment(dto.name, dto.description, dto.price, clinic))
+        const treatment = await treatmentRepository
+            .save(new Treatment(dto.name, dto.description ? dto.description : '', dto.price, clinic))
 
+        const { clinic: removedClinic, ...treatmentWithoutClinic } = treatment;
 
         return res.status(200).json({
             success: true,
-            message: `Treatment for clinic ${clinic.id} added succesfully.`
+            message: treatmentWithoutClinic
         });
     } catch (error: unknown) {
         if (error instanceof Error) {

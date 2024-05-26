@@ -5,10 +5,10 @@ export class CreateSupplyDto {
     @IsString()
     @IsNotEmpty()
     name: string;
-
-    @IsString()
+    
     @IsOptional()
-    description: string;
+    @IsString()
+    description?: string;
 
     @IsNumber()
     @IsNotEmpty()
@@ -16,5 +16,5 @@ export class CreateSupplyDto {
 
     @IsNumber()
     @IsNotEmpty()
-    minimunRequired: number;
+    minimumRequired: number;
 }

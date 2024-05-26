@@ -8,7 +8,7 @@ export class CreateTreatmentDto {
 
     @IsString()
     @IsOptional()
-    description: string;
+    description?: string;
 
     @IsNumber()
     price: number;
