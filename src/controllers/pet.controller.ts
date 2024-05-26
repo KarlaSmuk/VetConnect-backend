@@ -8,8 +8,8 @@ import { Owner } from '../model/entity/Owner.entity';
 import { authenticateGoogle } from '../middleware/authenticateGoogle ';
 import { google } from 'googleapis';
 import { uploadToGoogleDrive } from '../middleware/uploadToGoogleDrive';
-import { PetStatus } from 'constants/petStatus.enum';
-import { UpdatePetStatus } from 'model/requests/updatePetStatus.dto';
+import { PetStatus } from '../constants/petStatus.enum';
+import { UpdatePetStatus } from '../model/requests/updatePetStatus.dto';
 
 const ownerRepository = AppDataSource.getRepository(Owner)
 const speciesRepository = AppDataSource.getRepository(Species)
@@ -149,6 +149,9 @@ export const updatePetStatus: RequestHandler = async (req, res) => {
             .findOneByOrFail({id: dto.petId})
         
         pet.status = dto.status;
+        if(dto.status == PetStatus.DECEASED){
+            pet.deceasedAt = new Date()
+        }
 
         await petRepository.save(pet)
 
@@ -157,7 +160,6 @@ export const updatePetStatus: RequestHandler = async (req, res) => {
             .leftJoinAndSelect('pet.breed', 'breed')
             .leftJoinAndSelect('pet.species', 'species')
             .where("pet.id = :petId", { petId: dto.petId })
-            .andWhere("pet.deceasedAt IS NULL")
             .getOneOrFail()
 
         return res.status(200).json({
