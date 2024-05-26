@@ -8,6 +8,8 @@ import { Owner } from '../model/entity/Owner.entity';
 import { authenticateGoogle } from '../middleware/authenticateGoogle ';
 import { google } from 'googleapis';
 import { uploadToGoogleDrive } from '../middleware/uploadToGoogleDrive';
+import { PetStatus } from 'constants/petStatus.enum';
+import { UpdatePetStatus } from 'model/requests/updatePetStatus.dto';
 
 const ownerRepository = AppDataSource.getRepository(Owner)
 const speciesRepository = AppDataSource.getRepository(Species)
@@ -123,6 +125,44 @@ export const getPet: RequestHandler = async (req, res) => {
         return res.status(200).json({
             success: true,
             message: pet
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
+export const updatePetStatus: RequestHandler = async (req, res) => {
+
+    const dto: UpdatePetStatus = req.body;
+
+    try {
+
+        const pet = await petRepository
+            .findOneByOrFail({id: dto.petId})
+        
+        pet.status = dto.status;
+
+        await petRepository.save(pet)
+
+        const petToReturn = await petRepository
+            .createQueryBuilder("pet")
+            .leftJoinAndSelect('pet.breed', 'breed')
+            .leftJoinAndSelect('pet.species', 'species')
+            .where("pet.id = :petId", { petId: dto.petId })
+            .andWhere("pet.deceasedAt IS NULL")
+            .getOneOrFail()
+
+        return res.status(200).json({
+            success: true,
+            message: petToReturn
         });
 
     } catch (error: unknown) {
