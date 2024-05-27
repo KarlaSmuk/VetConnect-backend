@@ -1,11 +1,6 @@
-import { Type } from 'class-transformer';
-import { IsArray, IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID, ValidateNested } from 'class-validator';
+import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
 
 export class CreateVisitDto {
-    
-    @IsString()
-    @IsNotEmpty()
-    time: string;
 
     @IsNumber()
     @IsNotEmpty()
@@ -21,23 +16,5 @@ export class CreateVisitDto {
 
     @IsString()
     @IsOptional()
-    notes: string;
-
-    @IsArray()
-    @IsOptional()
-    @ValidateNested({ each: true })
-    @Type(() => CreateInvoiceItemDto)
-    items?: CreateInvoiceItemDto[];
-}
-
-class CreateInvoiceItemDto {
-    
-    @IsUUID()
-    @IsNotEmpty()
-    treatmentId: string;
-
-    @IsNotEmpty()
-    @IsNumber()
-    quantity: number;
-    
+    notes?: string;
 }

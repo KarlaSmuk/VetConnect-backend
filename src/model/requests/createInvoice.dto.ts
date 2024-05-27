@@ -14,9 +14,13 @@ class CreateInvoiceItemDto {
 }
 
 export class CreateInvoiceDto {
+
+    @IsUUID()
+    @IsNotEmpty()
+    visitId: string;
     
     @IsArray()
     @ValidateNested({ each: true })
     @Type(() => CreateInvoiceItemDto)
-    items: CreateInvoiceItemDto[];
+    treatments: CreateInvoiceItemDto[];
 }

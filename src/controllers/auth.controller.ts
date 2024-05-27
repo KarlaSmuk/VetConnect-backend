@@ -7,8 +7,6 @@ import { BadRequestError } from "../middleware/errorHandling";
 import { UserRole } from "../constants/roles.enum";
 import { Owner } from "../model/entity/Owner.entity";
 import { Veterinarian } from "../model/entity/Veterinarian.entity";
-import { plainToInstance } from "class-transformer";
-import { UserResponseDto } from "../model/responses/user.dto";
 
 const userRepository = AppDataSource.getRepository(User)
 const otpRepository = AppDataSource.getRepository(OtpData)

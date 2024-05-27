@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, OneToOne, JoinColumn, OneToMany, ManyToOne } from 'typeorm';
 import { Visit } from './Visit.entity';
 import { InvoiceItem } from './InvoiceItem.entity';
 
@@ -18,8 +18,7 @@ export class Invoice {
 
     //relationships
 
-    @OneToOne(() => Visit)
-    @JoinColumn()
+    @ManyToOne(() => Visit)
     visit: Visit
 
     @OneToMany(() => InvoiceItem, (item) => item.invoice)

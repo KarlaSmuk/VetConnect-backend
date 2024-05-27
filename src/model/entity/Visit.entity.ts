@@ -1,6 +1,7 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, OneToMany } from 'typeorm';
 import { Pet } from './Pet.entity';
 import { Veterinarian } from './Veterinarian.entity';
+import { Invoice } from './Invoice.entity';
 
 @Entity()
 export class Visit {
@@ -30,6 +31,9 @@ export class Visit {
 
     @ManyToOne(() => Veterinarian, (vet) => vet.visits)
     veterinarian: Veterinarian;
+
+    @OneToMany(() => Invoice, (invoice) => invoice.visit)
+    invoices: Invoice[];
 
     constructor(time: Date, weight: number, temperature: number, diagnosis: string, notes: string, pet: Pet, veterinarian: Veterinarian) {
         this.time = time;

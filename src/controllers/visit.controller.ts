@@ -4,17 +4,11 @@ import { Pet } from '../model/entity/Pet.entity';
 import { BadRequestError } from '../middleware/errorHandling';
 import { Visit } from '../model/entity/Visit.entity';
 import { CreateVisitDto } from '../model/requests/createVisit.dto';
-import { Treatment } from '../model/entity/Treatment.entity';
 import { Veterinarian } from '../model/entity/Veterinarian.entity';
-import { Invoice } from '../model/entity/Invoice.entity';
-import { InvoiceItem } from '../model/entity/InvoiceItem.entity';
 
 const petRepository = AppDataSource.getRepository(Pet)
-const treatmentRepository = AppDataSource.getRepository(Treatment)
 const visitRepository = AppDataSource.getRepository(Visit)
 const vetRepository = AppDataSource.getRepository(Veterinarian)
-const invoiceRepository = AppDataSource.getRepository(Invoice)
-const inoviceItemRepository = AppDataSource.getRepository(InvoiceItem)
 
 export const createVisit: RequestHandler = async (req, res) => {
 
@@ -37,37 +31,13 @@ export const createVisit: RequestHandler = async (req, res) => {
         const vet = await vetRepository
             .findOneByOrFail({ id: vetId.toString() })
 
-        const visit = await visitRepository.save(new Visit(new Date(dto.time), dto.weight, dto.temperature, dto.diagnosis, dto.notes, pet, vet));
+        const visit = await visitRepository.save(new Visit(new Date(), dto.weight, dto.temperature, dto.diagnosis, dto.notes || '', pet, vet));
 
-
-        if (dto.items) {
-            const treatments = await Promise.all(
-                dto.items.map(async item => {
-                    const treatment = await treatmentRepository.findOneByOrFail({ id: item.treatmentId })
-                    return {
-                        treatment: treatment,
-                        quantity: item.quantity,
-                        price: item.quantity * treatment.price
-                    }
-                }
-                )
-            )
-
-            const totalPrice = treatments.reduce((sum, item) => sum + item.price, 0);
-            const invoice = await invoiceRepository.save(new Invoice(totalPrice, visit));
-
-            await Promise.all(
-                treatments.map(item => {
-                    return inoviceItemRepository.save(new InvoiceItem(item.quantity, item.price, invoice, item.treatment));
-                })
-            );
-        }
-
-
+        const {pet: removedPet, veterinarian: removedVet, ...onlyVisitInfo} = visit;
 
         return res.status(200).json({
             success: true,
-            message: `Succesfully added visit for pet ${petId}`
+            message: onlyVisitInfo
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -94,8 +64,12 @@ export const getVisitsByPetId: RequestHandler = async (req, res) => {
 
         const visits = await visitRepository
             .createQueryBuilder("visit")
-            .leftJoinAndSelect("visit.treatments", "treatment")//to join ids to get treatments
+            .leftJoinAndSelect('visit.veterinarian', 'veterinarian')
+            .leftJoin('veterinarian.user', 'user')
+            .leftJoin('veterinarian.clinic', 'clinic')
+            .addSelect(['user.firstName', 'user.lastName', 'user.email', 'clinic.name', 'clinic.email'])
             .where("visit.petId = :petId", { petId: pet.id })
+            .orderBy("visit.time", "DESC")
             .getMany()
 
         return res.status(200).json({
@@ -124,7 +98,6 @@ export const getVisitById: RequestHandler = async (req, res) => {
 
         const visit = await visitRepository
             .createQueryBuilder("visit")
-            .leftJoinAndSelect("visit.treatments", "treatment")//to join ids to get treatments
             .where("visit.id = :visitId", { visitId })
             .getOneOrFail()
 
