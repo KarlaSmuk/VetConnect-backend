@@ -355,9 +355,11 @@ export const getSuppliesByClinicId: RequestHandler = async (req, res) => {
             throw new NotFoundError("Clinic not found.")
         }
 
-        const supplies = await supplyRepository.findBy({
-            clinic: clinic
+        const supplies = await supplyRepository.find({
+            where: { clinic: clinic },
+            order: { name: 'ASC' }
         });
+
 
 
         return res.status(200).json({
@@ -374,7 +376,7 @@ export const getSuppliesByClinicId: RequestHandler = async (req, res) => {
     }
 };
 
-export const updateSupply: RequestHandler = async (req, res) => {
+export const updateSupplyStock: RequestHandler = async (req, res) => {
 
     const { supplyId } = req.params;
     const stockQuantity = Number(req.query.stockQuantity);
@@ -391,6 +393,41 @@ export const updateSupply: RequestHandler = async (req, res) => {
 
         supplyToUpdate.stockQuantity = stockQuantity;
         supplyToUpdate.updated = new Date();
+
+        await supplyRepository.save(supplyToUpdate);
+
+        return res.status(200).json({
+            success: true,
+            message: `Supply ${supplyId} updated succesfully.`
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+
+    }
+};
+
+export const updateSupplyDescription: RequestHandler = async (req, res) => {
+
+    const { supplyId } = req.params;
+    const description = req.query.description!.toString();
+
+    try {
+
+        const supplyToUpdate = await supplyRepository.findOneBy({
+            id: supplyId
+        });
+
+        if (!supplyToUpdate) {
+            throw new NotFoundError(`Supply with id ${supplyId} do not exist and cannot be updated.`)
+        }
+
+        supplyToUpdate.description = description;
+        //supplyToUpdate.updated = new Date();
 
         await supplyRepository.save(supplyToUpdate);
 
@@ -455,8 +492,9 @@ export const getTreatmentsByClinicId: RequestHandler = async (req, res) => {
             throw new NotFoundError("Clinic not found.")
         }
 
-        const treatments = await treatmentRepository.findBy({
-            clinic: clinic
+        const treatments = await treatmentRepository.find({
+            where: { clinic: clinic },
+            order: { name: 'ASC' }
         });
 
 
@@ -502,7 +540,7 @@ export const deleteTreatment: RequestHandler = async (req, res) => {
 };
 
 
-export const updateTreatment: RequestHandler = async (req, res) => {
+export const updateTreatmentPrice: RequestHandler = async (req, res) => {
 
     const { treatmentId } = req.params;
     const price = Number(req.query.price);
@@ -519,6 +557,40 @@ export const updateTreatment: RequestHandler = async (req, res) => {
         }
 
         treatmentToUpdate.price = price;
+
+        await treatmentRepository.save(treatmentToUpdate);
+
+        return res.status(200).json({
+            success: true,
+            message: `Treatment ${treatmentId} updated succesfully.`
+        });
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+};
+
+export const updateTreatmentDescription: RequestHandler = async (req, res) => {
+
+    const { treatmentId } = req.params;
+    const description = req.query.description!.toString();
+
+    try {
+
+
+        const treatmentToUpdate = await treatmentRepository.findOneByOrFail({
+            id: treatmentId
+        });
+
+        if (!treatmentToUpdate) {
+            throw new NotFoundError(`Treatment with id ${treatmentId} do not exist and cannot be updated.`)
+        }
+
+        treatmentToUpdate.description = description;
 
         await treatmentRepository.save(treatmentToUpdate);
 
