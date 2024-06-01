@@ -6,11 +6,14 @@ import { CreateAppointmentDto } from "../model/requests/createAppointment";
 import { Appointment } from "../model/entity/Appointment.entity";
 import { WorkingHours } from "../model/entity/WorkingHours.entity";
 import { AppointmentStatus } from "../constants/appointmentStatus.enum";
+import { Owner } from "../model/entity/Owner.entity";
+import { PetStatus } from "../constants/petStatus.enum";
 
 const petRepository = AppDataSource.getRepository(Pet)
 const clinicRepository = AppDataSource.getRepository(VeterinaryClinic)
 const whRepository = AppDataSource.getRepository(WorkingHours)
 const appointmentRepository = AppDataSource.getRepository(Appointment)
+const ownerRepository = AppDataSource.getRepository(Owner)
 
 export const createAppointment: RequestHandler = async (req, res) => {
 
@@ -114,10 +117,14 @@ export const getAppointmentsByClinicId: RequestHandler = async (req, res) => {
             });
         }
 
-        const appointments = await appointmentRepository.findBy({clinic:clinic})
+        
+        const appointments = await appointmentRepository.find({
+            where: {clinic: clinic, status: AppointmentStatus.SCHEDULED}, 
+            relations: ['pet']
+        })
 
-        return res.status(404).json({
-            success: false,
+        return res.status(200).json({
+            success: true,
             message: appointments
         });
 
@@ -133,27 +140,42 @@ export const getAppointmentsByClinicId: RequestHandler = async (req, res) => {
 
 };
 
-export const getAppointmentsByPetId: RequestHandler = async (req, res) => {
+export const getAppointmentsByOwnerId: RequestHandler = async (req, res) => {
 
-    const petId = req.query.petId
+    const ownerId = req.query.ownerId
 
     try {
 
-        const pet = await petRepository
-            .findOneBy({id: petId?.toString()})
+        const owner = await ownerRepository
+            .findOneBy({id: ownerId?.toString()})
+        if(!owner){
+            return res.status(404).json({
+                success: false,
+                message: 'Owner doesnt exist.'
+            });
+        }
+        const pets = await petRepository
+            .findBy({owner: owner, status: PetStatus.ALIVE})
 
-        if(!pet){
+        if(!pets){
             return res.status(404).json({
                 success: false,
                 message: 'Pet doesnt exist.'
             });
         }
 
-        const appointments = await appointmentRepository.findBy({pet:pet})
+        let allAppointments = [];
+        for(const pet of pets){
+            const appointments = await appointmentRepository.find({
+                where: {pet: pet, status: AppointmentStatus.SCHEDULED}, 
+                relations: ['pet', 'clinic']
+            }) 
+            if(appointments.length > 0) allAppointments.push(appointments)
+        }
 
-        return res.status(404).json({
-            success: false,
-            message: appointments
+        return res.status(200).json({
+            success: true,
+            message: allAppointments
         });
 
     } catch (error: unknown) {
