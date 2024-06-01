@@ -40,6 +40,7 @@ export const createAppointment: RequestHandler = async (req, res) => {
         const a = await appointmentRepository
             .createQueryBuilder('appointment')
             .where('appointment.clinicId = :clinicId', {clinicId: clinic.id})
+            .where('appointment.status = :status', {status: AppointmentStatus.SCHEDULED})
             .andWhere('appointment.time BETWEEN :beforeCurrentTime AND :afterCurrentTime', {
                 beforeCurrentTime: new Date(currentTime.getTime() - 14*60*1000),
                 afterCurrentTime: new Date(currentTime.getTime() + 14*60*1000)
@@ -73,7 +74,7 @@ export const createAppointment: RequestHandler = async (req, res) => {
                     });
                 }
                 
-                const appointment = await appointmentRepository.findOneBy({clinic: clinic, time: currentTime})
+                const appointment = await appointmentRepository.findOneBy({clinic: clinic, time: currentTime, status: AppointmentStatus.SCHEDULED})
                 if(!appointment){
                     appointmentTime = currentTime
                 }else{
