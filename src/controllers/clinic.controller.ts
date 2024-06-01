@@ -394,11 +394,14 @@ export const updateSupplyStock: RequestHandler = async (req, res) => {
         supplyToUpdate.stockQuantity = stockQuantity;
         supplyToUpdate.updated = new Date();
 
-        await supplyRepository.save(supplyToUpdate);
+        const editSupply = await supplyRepository.save(supplyToUpdate);
 
         return res.status(200).json({
             success: true,
-            message: `Supply ${supplyId} updated succesfully.`
+            message: {
+                message: `Supply ${supplyId} updated succesfully.`,
+                updatedAt: editSupply.updated
+            }
         });
     } catch (error: unknown) {
         if (error instanceof Error) {
@@ -429,11 +432,14 @@ export const updateSupplyDescription: RequestHandler = async (req, res) => {
         supplyToUpdate.description = description;
         //supplyToUpdate.updated = new Date();
 
-        await supplyRepository.save(supplyToUpdate);
+        const editSupply = await supplyRepository.save(supplyToUpdate);
 
         return res.status(200).json({
             success: true,
-            message: `Supply ${supplyId} updated succesfully.`
+            message: {
+                message: `Supply ${supplyId} updated succesfully.`,
+                updatedAt: editSupply.updated
+            }
         });
     } catch (error: unknown) {
         if (error instanceof Error) {

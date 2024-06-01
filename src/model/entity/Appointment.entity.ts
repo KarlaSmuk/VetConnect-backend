@@ -28,4 +28,12 @@ export class Appointment {
 
     @ManyToOne(() => VeterinaryClinic, (clinic) => clinic.appointment)
     clinic: VeterinaryClinic;
+
+    constructor(pet: Pet, clinic: VeterinaryClinic, time: Date, purpose: string, status: AppointmentStatus) {
+        this.pet = pet;
+        this.clinic = clinic;
+        this.time = time;
+        this.purpose = purpose;
+        this.status = status;
+    }
 }

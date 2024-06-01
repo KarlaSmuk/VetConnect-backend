@@ -33,11 +33,19 @@ export const createVisit: RequestHandler = async (req, res) => {
 
         const visit = await visitRepository.save(new Visit(new Date(), dto.weight, dto.temperature, dto.diagnosis, dto.notes || '', pet, vet));
 
-        const {pet: removedPet, veterinarian: removedVet, ...onlyVisitInfo} = visit;
+        const visitToReturn = await visitRepository
+            .createQueryBuilder("visit")
+            .leftJoinAndSelect('visit.veterinarian', 'veterinarian')
+            .leftJoin('veterinarian.user', 'user')
+            .leftJoin('veterinarian.clinic', 'clinic')
+            .addSelect(['user.firstName', 'user.lastName', 'user.email', 'clinic.name', 'clinic.email'])
+            .where("visit.id = :id", { id: visit.id })
+            .orderBy("visit.time", "DESC")
+            .getOne()
 
         return res.status(200).json({
             success: true,
-            message: onlyVisitInfo
+            message: visitToReturn
         });
     } catch (error: unknown) {
         if (error instanceof Error) {

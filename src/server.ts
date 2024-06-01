@@ -12,6 +12,7 @@ import invoiceRoute from './routes/invoice.router';
 import ownersRoute from './routes/owner.router';
 import vetsRoute from './routes/vet.router';
 import authRoute from './routes/auth.router';
+import appointmentRoute from './routes/appointment.router';
 import cors from 'cors';
 
 dotenv.config();
@@ -33,6 +34,7 @@ app.use('/api/pet', petRoute)
 app.use('/api/visit', visitRoute)
 app.use('/api/invoice', invoiceRoute)
 app.use('/api/auth', authRoute)
+app.use('/api/appointment', appointmentRoute)
 
 
 app.listen(PORT, () => {
