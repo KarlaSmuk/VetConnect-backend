@@ -152,7 +152,7 @@ export const getInvoicesByVisit: RequestHandler = async (req, res) => {
             });  
         }
 
-        let invoiceItemsWithTreatments = [];
+        const invoiceItemsWithTreatments = [];
         for (const invoice of invoices) { 
             const pom = await invoiceItemRepository
                 .createQueryBuilder("invoiceItem")
@@ -162,7 +162,7 @@ export const getInvoicesByVisit: RequestHandler = async (req, res) => {
             invoiceItemsWithTreatments.push({ invoice, treatments: pom });
         }
         
-        let result = [];
+        const result = [];
         for (const { invoice, treatments } of invoiceItemsWithTreatments) { 
             const pom = {
                 invoice: {

@@ -8,6 +8,7 @@ import { WorkingHours } from "../model/entity/WorkingHours.entity";
 import { AppointmentStatus } from "../constants/appointmentStatus.enum";
 import { Owner } from "../model/entity/Owner.entity";
 import { PetStatus } from "../constants/petStatus.enum";
+import { UpdateAppointmentStatus } from "model/requests/updateAppointmentStatus.dto";
 
 const petRepository = AppDataSource.getRepository(Pet)
 const clinicRepository = AppDataSource.getRepository(VeterinaryClinic)
@@ -22,12 +23,12 @@ export const createAppointment: RequestHandler = async (req, res) => {
     try {
 
         const clinic = await clinicRepository
-            .findOneBy({id: dto.clinicId})
+            .findOneBy({ id: dto.clinicId })
 
         const pet = await petRepository
-            .findOneBy({id: dto.petId})
+            .findOneBy({ id: dto.petId })
 
-        if(!pet || !clinic){
+        if (!pet || !clinic) {
             return res.status(404).json({
                 success: false,
                 message: 'Pet or clinic doesnt exist.'
@@ -39,33 +40,32 @@ export const createAppointment: RequestHandler = async (req, res) => {
         //check if appointment exists, time 14 minutes before and later
         const a = await appointmentRepository
             .createQueryBuilder('appointment')
-            .where('appointment.clinicId = :clinicId', {clinicId: clinic.id})
-            .where('appointment.status = :status', {status: AppointmentStatus.SCHEDULED})
+            .where('appointment.clinicId = :clinicId', { clinicId: clinic.id })
+            .where('appointment.status = :status', { status: AppointmentStatus.SCHEDULED })
             .andWhere('appointment.time BETWEEN :beforeCurrentTime AND :afterCurrentTime', {
-                beforeCurrentTime: new Date(currentTime.getTime() - 14*60*1000),
-                afterCurrentTime: new Date(currentTime.getTime() + 14*60*1000)
+                beforeCurrentTime: new Date(currentTime.getTime() - 14 * 60 * 1000),
+                afterCurrentTime: new Date(currentTime.getTime() + 14 * 60 * 1000)
             })
             .orderBy("appointment.time", "DESC")
             .getOne()
-       
-        if(!a){
+
+        if (!a) {
             const isWithinWorkingHours = await isTimeWithinWorkingHours(clinic, currentTime);
-                if (!isWithinWorkingHours) {
-                    return res.status(400).json({
-                        success: false,
-                        message: 'Time is outside the working hours of the clinic'
-                    });
-                }
+            if (!isWithinWorkingHours) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Time is outside the working hours of the clinic'
+                });
+            }
 
             const appointment = await appointmentRepository.save(new Appointment(pet, clinic, currentTime, dto.purpose, AppointmentStatus.SCHEDULED))
             return res.status(200).json({
                 success: true,
                 message: appointment
             });
-        }else{
+        } else {
             currentTime = new Date(a.time.getTime() + 15 * 60 * 1000);
-            while(!appointmentTime){
-                console.log(currentTime)
+            while (!appointmentTime) {
                 const isWithinWorkingHours = await isTimeWithinWorkingHours(clinic, currentTime);
                 if (!isWithinWorkingHours) {
                     return res.status(400).json({
@@ -73,11 +73,11 @@ export const createAppointment: RequestHandler = async (req, res) => {
                         message: 'Time is outside the working hours of the clinic'
                     });
                 }
-                
-                const appointment = await appointmentRepository.findOneBy({clinic: clinic, time: currentTime, status: AppointmentStatus.SCHEDULED})
-                if(!appointment){
+
+                const appointment = await appointmentRepository.findOneBy({ clinic: clinic, time: currentTime, status: AppointmentStatus.SCHEDULED })
+                if (!appointment) {
                     appointmentTime = currentTime
-                }else{
+                } else {
                     currentTime = new Date(currentTime.getTime() + 15 * 60 * 1000);
                 }
             }
@@ -109,18 +109,19 @@ export const getAppointmentsByClinicId: RequestHandler = async (req, res) => {
     try {
 
         const clinic = await clinicRepository
-            .findOneBy({id: clinicId?.toString()})
+            .findOneBy({ id: clinicId?.toString() })
 
-        if(!clinic){
+        if (!clinic) {
             return res.status(404).json({
                 success: false,
                 message: 'Clinic doesnt exist.'
             });
         }
 
-        
+
         const appointments = await appointmentRepository.find({
-            where: {clinic: clinic, status: AppointmentStatus.SCHEDULED}, 
+            where: { clinic: clinic, status: AppointmentStatus.SCHEDULED },
+            order: { time: 'ASC' },
             relations: ['pet']
         })
 
@@ -148,35 +149,74 @@ export const getAppointmentsByOwnerId: RequestHandler = async (req, res) => {
     try {
 
         const owner = await ownerRepository
-            .findOneBy({id: ownerId?.toString()})
-        if(!owner){
+            .findOneBy({ id: ownerId?.toString() })
+        if (!owner) {
             return res.status(404).json({
                 success: false,
                 message: 'Owner doesnt exist.'
             });
         }
         const pets = await petRepository
-            .findBy({owner: owner, status: PetStatus.ALIVE})
+            .findBy({ owner: owner, status: PetStatus.ALIVE })
 
-        if(!pets){
+        if (!pets) {
             return res.status(404).json({
                 success: false,
                 message: 'Pet doesnt exist.'
             });
         }
 
-        let allAppointments = [];
-        for(const pet of pets){
+        const allAppointments: { [id: string]: Appointment[]; } = {};
+
+        for (const pet of pets) {
             const appointments = await appointmentRepository.find({
-                where: {pet: pet, status: AppointmentStatus.SCHEDULED}, 
-                relations: ['pet', 'clinic']
-            }) 
-            if(appointments.length > 0) allAppointments.push(appointments)
+                where: { pet: pet, status: AppointmentStatus.SCHEDULED },
+                relations: ['clinic']
+            })
+            if (appointments.length > 0) allAppointments[pet.id] = appointments
         }
 
         return res.status(200).json({
             success: true,
             message: allAppointments
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            res.status(500).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
+export const updateAppointmentStatus: RequestHandler = async (req, res) => {
+
+    const dto: UpdateAppointmentStatus = req.body
+
+    try {
+
+        const appointment = await appointmentRepository
+            .findOneBy({ id: dto.appointmentId })
+
+        if (!appointment) {
+            return res.status(404).json({
+                success: false,
+                message: 'Appointment doesnt exist.'
+            });
+        }
+
+        appointment.status = dto.status
+
+        const updatedAppointment = await appointmentRepository.save(appointment)
+
+
+        return res.status(200).json({
+            success: true,
+            message: updatedAppointment
         });
 
     } catch (error: unknown) {
@@ -205,7 +245,7 @@ async function isTimeWithinWorkingHours(clinic: VeterinaryClinic, date: Date) {
 
     const end = hoursForDay.closingTime.split(':')
     let endHour = parseInt(end[0]);
-    let endMinute = parseInt(end[1]);
+    const endMinute = parseInt(end[1]);
 
     let minutesEnd = 0;
     if (endMinute >= 30) {
@@ -218,7 +258,7 @@ async function isTimeWithinWorkingHours(clinic: VeterinaryClinic, date: Date) {
     //calculate to hours and minutes
     if (minutesEnd < 0) {
         minutesEnd += 60;
-        endHour--; 
+        endHour--;
     }
 
     const endTime = endHour + ':' + minutesEnd
