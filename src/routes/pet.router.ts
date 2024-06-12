@@ -1,5 +1,5 @@
 import { Router } from "express";
-import { createPet, getPetsByOwnerId, getPet, getBreedsBySpeciesId, getSpecies, savePetImage, updatePetStatus } from "../controllers/pet.controller";
+import { createPet, getPetsByOwnerId, getPet, getBreedsBySpeciesId, getSpecies, savePetImage, updatePetStatus, updatePetNeutered } from "../controllers/pet.controller";
 import { validateRequest } from "../middleware/validateRequest";
 import { CreatePetDto } from "../model/requests/createPet.dto";
 import { multer } from "../middleware/multer";
@@ -17,6 +17,7 @@ router.get("/", getPetsByOwnerId);
 router.get("/getPet/:petId", getPet);
 
 router.put("/updatePetStatus", validateRequest(UpdatePetStatus), updatePetStatus)
+router.put("/updatePetNeutered/:petId", updatePetNeutered)
 
 
 

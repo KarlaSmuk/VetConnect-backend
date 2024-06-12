@@ -179,6 +179,51 @@ export const updatePetStatus: RequestHandler = async (req, res) => {
 
 };
 
+export const updatePetNeutered: RequestHandler = async (req, res) => {
+
+    const petId = req.params.petId;
+
+    try {
+
+        const pet = await petRepository
+            .findOneByOrFail({id: petId})
+        
+        if(pet.neutered == false){
+            pet.neutered = true
+        }else{
+            return res.status(404).send({
+                success: false,
+                message: 'Pet already neutered.'
+            });
+        }
+
+        await petRepository.save(pet)
+
+        const petToReturn = await petRepository
+            .createQueryBuilder("pet")
+            .leftJoinAndSelect('pet.breed', 'breed')
+            .leftJoinAndSelect('pet.species', 'species')
+            .where("pet.id = :petId", { petId: petId.toString() })
+            .getOneOrFail()
+
+        return res.status(200).json({
+            success: true,
+            message: petToReturn
+        });
+
+    } catch (error: unknown) {
+        if (error instanceof Error) {
+            console.log(error)
+            return res.status(400).send({
+                success: false,
+                message: error.message
+            });
+        }
+    }
+
+
+};
+
 export const savePetImage: RequestHandler = async (req, res) => {
 
     const { petId } = req.params;

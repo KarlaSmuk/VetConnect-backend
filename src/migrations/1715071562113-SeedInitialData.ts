@@ -15,7 +15,7 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         await queryRunner.query(
             `INSERT INTO "user" ("email", "firstName", "lastName", "phoneNumber", "password", "role")
              VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO NOTHING`,
-            ['admin@admin.com', 'admin', 'admin', '000000000', adminPassword, UserRole.ADMIN]
+            ['admin@admin.com', 'admin', 'admin', '+385 95 000 0000', adminPassword, UserRole.ADMIN]
         );
         
         await queryRunner.query(
@@ -73,7 +73,7 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         await queryRunner.query(
             `INSERT INTO "veterinary_clinic" ("oib", "name", "address", "county", "phoneNumber", "email", "webAddress")
              VALUES ($1, $2, $3, $4, $5, $6, $7)`,
-            ['12345678901', 'Veterinarska Klinika', 'Ilica 42, 10000 Zagreb', 'Grad Zagreb', '+385 1 2345 678', 'info@vet.hr', 'www.vet.hr']
+            ['12345678901', 'Veterinarska Stanica 1', 'Adresa 1, Zagreb', 'Grad Zagreb', '+385 1 0000 000', 'info@vet.hr', 'www.vet.hr']
         );
 
         const clinicId = (await queryRunner.query(
@@ -103,7 +103,7 @@ export class SeedInitialData1715071562113 implements MigrationInterface {
         await queryRunner.query(
             `INSERT INTO "user" ("email", "firstName", "lastName", "phoneNumber", "password", "role")
              VALUES ($1, $2, $3, $4, $5, $6) ON CONFLICT (email) DO NOTHING`,
-            ['vet@vet.com', 'Ivan', 'Horvat', '+385 91 234 5678', vetPassword, UserRole.VET]
+            ['vet@vet.com', 'Ivan', 'Horvat', '+385 91 000 0000', vetPassword, UserRole.VET]
         );
 
         const vetUserId = (await queryRunner.query(
